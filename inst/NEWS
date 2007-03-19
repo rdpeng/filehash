@@ -1,0 +1,74 @@
+Version 0.9
+-----------
+
+* For 'filehashRDS' class, the 'dbDir' slot has been renamed to 'dir'.
+
+* An attempt has been made to normalize the error handling to make it
+consistent.
+
+* The various 'dump' functions have been given a 'type' argument
+
+
+Version 0.8
+-----------
+
+* Added function dbLazyLoad for lazy loading filehash databases.
+
+* dbCreate and dbInit are now generics with a method for character
+vectors.  The behavior should be the same as before, by default.
+
+* dbLoad is generic.
+
+* The second argument to dbMultiFetch is 'key', not 'keys'.
+
+* dbInitialize is deprecated
+
+* 'DB1' and 'RDS' formats use normalizePath() for resolving paths to
+directories
+
+* There is a vignette now [via vignette("filehash")]
+
+
+Version 0.6-3
+-------------
+
+* Added methods for "[[", "$", "[[<-", and "$<-" for filehash
+objects. Only character indices are allowed
+
+* filehash-DB functions use the new serialize() from R 2.4.0 so that
+numeric data will not suffer from rounding error due to previous use
+of serialize(ascii = TRUE).
+
+* New format filehash-DB1 which stores the key index/map and data in a
+single file.
+
+* New "filehash" method for lapply so that functions can be applied to
+database entries.
+
+
+Version 0.4-1
+-------------
+
+* Patch release, changed some internals for the "DB" type databases
+
+* Added test database for regression testing in future releases
+
+
+Version 0.4
+-----------
+
+* Added name mangling scheme to prevent clobbering on case-insensitive
+OSes like Windows (thanks to Bill Venables and David Brahm)
+
+* Added dumpImage, dumpObjects, dumpDF functions for dumping various
+things to filehash databases
+
+* Added filehashOption() function for setting global options; right
+now only the default database type can be set
+
+* dbLoad and db2env are regular functions now rather than
+generics/methods.  dbLoad's default 'env' is the parent frame now
+
+* Added a "filehash" method for 'with'
+
+* Added new generic dbUnlink which deletes a database from the disk

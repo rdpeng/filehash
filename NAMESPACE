@@ -1,0 +1,54 @@
+importFrom(utils, normalizePath)
+
+## Classes
+exportClasses(
+              "filehash",
+              "filehashDB",
+              "filehashRDS",
+              "filehashDB1"
+              )
+
+
+## Primary interface
+exportMethods(
+              "dbInsert",
+              "dbFetch",
+              "dbExists",
+              "dbList",
+              "dbDelete",
+              "dbReorganize",
+              "dbUnlink",
+              "dbMultiFetch",
+              "dbDisconnect",
+              "dbCreate",
+              "dbInit",
+              "dbLoad",
+              "dbLazyLoad"
+              )
+
+exportMethods("[[", "[", "[[<-", "$<-", "$")
+
+export(
+       "dbInitialize",
+       "convertDB",
+       "filehashOption",
+       "registerFormatDB",
+       "filehashFormats"
+       )
+
+
+## Miscellaneous functions
+exportMethods(
+              "show",
+              "with",
+              "coerce",
+              "lapply"
+              )
+
+export(
+       "dumpDF",
+       "dumpObjects",
+       "db2env",
+       "dumpImage",
+       "dumpList"
+       )
