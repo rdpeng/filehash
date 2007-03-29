@@ -7,6 +7,7 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 {
 	SEXP key, datalen;
 	FILE *fp;	
+	int status;
 	struct R_inpstream_st in;
 	
 	if(!isEnvironment(map))
@@ -19,8 +20,12 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 
 	fp = fopen(CHAR(STRING_ELT(filename, 0)), "rb");
 
-	if(INTEGER(pos)[0] > 0)
-		fseek(fp, INTEGER(pos)[0], SEEK_SET);
+	if(INTEGER(pos)[0] > 0) {
+		status = fseek(fp, INTEGER(pos)[0], SEEK_SET);
+
+		if(status < 0)
+			error("problem with initial file pointer seek");
+	}
 	
 	/* Initialize the incoming R file stream */
 	R_InitFileInPStream(&in, fp, R_pstream_any_format, NULL, NULL);
@@ -28,6 +33,11 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 	while(INTEGER(pos)[0] < INTEGER(filesize)[0]) {
 		key = R_Unserialize(&in);
 		datalen = R_Unserialize(&in);
+
+		if(!isString(key))
+			error("'key' is not a string");
+		if(!isInteger(datalen))
+			error("'datalen' is not an integer");
 
 		/* calculate the position of file pointer */
 		INTEGER(pos)[0] = ftell(fp);
