@@ -10,11 +10,12 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 	struct R_inpstream_st in;
 	
 	if(!isEnvironment(map))
-		error("rho should be an environment");
+		error("'map' should be an environment");
+	if(!isString(filename))
+		error("'filename' should be character");
 
 	PROTECT(filesize = coerceVector(filesize, INTSXP));
 	PROTECT(pos = coerceVector(pos, INTSXP));
-	PROTECT(filename = coerceVector(filename, STRSXP));
 
 	fp = fopen(CHAR(STRING_ELT(filename, 0)), "rb");
 
@@ -32,13 +33,14 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 		INTEGER(pos)[0] = ftell(fp);
 	
 		/* create a new entry in the key map */
-		defineVar(install(CHAR(STRING_ELT(key, 0))), duplicate(pos), map);
+		defineVar(install(CHAR(STRING_ELT(key, 0))), 
+			  duplicate(pos), map);
 		
 		/* advance to the next key */
 		fseek(fp, INTEGER(datalen)[0], SEEK_CUR);
 		INTEGER(pos)[0] = INTEGER(pos)[0] + INTEGER(datalen)[0];
 	}
-	UNPROTECT(3);
+	UNPROTECT(2);
 	fclose(fp);
 	return map;
 }
