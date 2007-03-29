@@ -117,6 +117,17 @@ findEndPos <- function(con) {
 
 readKeyMap <- function(con, map = NULL, pos = 0) {
     if(is.null(map)) {
+        ## using 'hash = TRUE' is critical because it can have a major
+        ## impact on performance for large databases
+        map <- new.env(hash = TRUE, parent = emptyenv())
+        pos <- 0
+    }
+    filename <- summary(con)$description
+    .Call("read_key_map", filename, map, file.info(filename)$size, pos)
+}
+
+readKeyMap.orig <- function(con, map = NULL, pos = 0) {
+    if(is.null(map)) {
         map <- new.env(hash = TRUE, parent = emptyenv())
         pos <- 0
     }
@@ -293,7 +304,6 @@ setGeneric("checkMap", function(db) standardGeneric("checkMap"))
 setMethod("checkMap", "filehashDB1",
           function(db) {
               old.size <- get("dbfilesize", db@meta$metaEnv)
-              ## cur.size <- file.info(db@datafile)$size
               cur.size <- tryCatch({
                   filesize(db@filecon)
               }, error = function(err) {
@@ -302,10 +312,15 @@ setMethod("checkMap", "filehashDB1",
               size.change <- old.size != cur.size
               map.orig <- getMap(db)
 
-              map <- if(is.null(map.orig))
+              map <- if(is.null(map.orig)) {
+                  ## read the entire key file from beginning
                   readKeyMap(db@filecon)
-              else if(size.change)
+              }
+              else if(size.change) {
+                  ## start reading from the end of the file
+                  ## ('old.size')
                   readKeyMap(db@filecon, map.orig, old.size)
+              }
               else
                   map.orig
               

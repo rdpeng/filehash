@@ -3,9 +3,9 @@
 #include <R.h>
 #include <Rinternals.h>
 
-SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize) 
+SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos) 
 {
-	SEXP key, pos, datalen;
+	SEXP key, datalen;
 	FILE *fp;	
 	struct R_inpstream_st in;
 	
@@ -13,24 +13,28 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize)
 		error("rho should be an environment");
 
 	PROTECT(filesize = coerceVector(filesize, INTSXP));
-	PROTECT(pos = allocVector(INTSXP, 1));
-	INTEGER(pos)[0] = 0;
+	PROTECT(pos = coerceVector(pos, INTSXP));
+	Rprintf("Pos: %d\n", INTEGER(pos)[0]);
 
 	fp = fopen(CHAR(STRING_ELT(filename, 0)), "rb");
+
+	if(INTEGER(pos)[0] > 0)
+		fseek(fp, INTEGER(pos)[0], SEEK_SET);
+	
+	/* Initialize the incoming R file stream */
 	R_InitFileInPStream(&in, fp, R_pstream_any_format, NULL, NULL);
 
 	while(INTEGER(pos)[0] < INTEGER(filesize)[0]) {
 		key = R_Unserialize(&in);
-		/* Rprintf("Key: %s\n", CHAR(STRING_ELT(key, 0))); */
-
 		datalen = R_Unserialize(&in);
-		/* Rprintf("Data len: %d\n", INTEGER(datalen)[0]); */
-
+		
+		/* calculate the position of file pointer */
 		INTEGER(pos)[0] = ftell(fp);
-		/* Rprintf("Pos: %d\n", INTEGER(pos)[0]); */
 	
+		/* create a new entry in the key map */
 		defineVar(install(CHAR(STRING_ELT(key, 0))), duplicate(pos), map);
-
+		
+		/* advance to the next key */
 		fseek(fp, INTEGER(datalen)[0], SEEK_CUR);
 		INTEGER(pos)[0] = INTEGER(pos)[0] + INTEGER(datalen)[0];
 	}
