@@ -14,7 +14,7 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 
 	PROTECT(filesize = coerceVector(filesize, INTSXP));
 	PROTECT(pos = coerceVector(pos, INTSXP));
-	Rprintf("Pos: %d\n", INTEGER(pos)[0]);
+	PROTECT(filename = coerceVector(filename, STRSXP));
 
 	fp = fopen(CHAR(STRING_ELT(filename, 0)), "rb");
 
@@ -38,7 +38,7 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 		fseek(fp, INTEGER(datalen)[0], SEEK_CUR);
 		INTEGER(pos)[0] = INTEGER(pos)[0] + INTEGER(datalen)[0];
 	}
-	UNPROTECT(2);
+	UNPROTECT(3);
 	fclose(fp);
 	return map;
 }

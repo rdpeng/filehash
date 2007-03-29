@@ -122,7 +122,7 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
         map <- new.env(hash = TRUE, parent = emptyenv())
         pos <- 0
     }
-    filename <- summary(con)$description
+    filename <- path.expand(summary(con)$description)
     .Call("read_key_map", filename, map, file.info(filename)$size, pos)
 }
 
