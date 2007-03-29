@@ -434,7 +434,7 @@ setMethod("dbList", "filehashDB1",
               else {
                   map.list <- as.list(map, all.names = TRUE)
                   use <- !sapply(map.list, is.null)
-                  names(map.list)[use]
+                  names(map.list[use])
               }
           })
 
