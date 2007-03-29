@@ -28,17 +28,24 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 	while(INTEGER(pos)[0] < INTEGER(filesize)[0]) {
 		key = R_Unserialize(&in);
 		datalen = R_Unserialize(&in);
-		
+
 		/* calculate the position of file pointer */
 		INTEGER(pos)[0] = ftell(fp);
 	
-		/* create a new entry in the key map */
-		defineVar(install(CHAR(STRING_ELT(key, 0))), 
-			  duplicate(pos), map);
-		
-		/* advance to the next key */
-		fseek(fp, INTEGER(datalen)[0], SEEK_CUR);
-		INTEGER(pos)[0] = INTEGER(pos)[0] + INTEGER(datalen)[0];
+		if(INTEGER(datalen)[0] > 0) {
+			/* create a new entry in the key map */
+			defineVar(install(CHAR(STRING_ELT(key, 0))), 
+				  duplicate(pos), map);
+			
+			/* advance to the next key */
+			fseek(fp, INTEGER(datalen)[0], SEEK_CUR);
+			INTEGER(pos)[0] = INTEGER(pos)[0] + INTEGER(datalen)[0];
+		}
+		else {
+			/* key has been deleted; set pos to NULL */
+			defineVar(install(CHAR(STRING_ELT(key, 0))),
+				  R_NilValue, map);
+		}
 	}
 	UNPROTECT(2);
 	fclose(fp);

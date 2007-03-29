@@ -124,12 +124,12 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
     }
     if(pos < 0)
         stop("'pos' cannot be negative")
+    filename <- path.expand(summary(con)$description)
     filesize <- file.info(filename)$size
 
     if(pos > filesize)
         stop("'pos' cannot be greater than file size")
-    
-    filename <- path.expand(summary(con)$description)
+
     .Call("read_key_map", filename, map, filesize, pos)
 }
 
@@ -224,7 +224,7 @@ writeNullKeyValue <- function(con, key) {
             tryCatch({
                 writeKey(con, key)
                 
-                len <- -1
+                len <- as.integer(-1)
                 serialize(len, con)
             }, interrupt = handler, error = handler, finally = {
                 flush(con)
@@ -431,8 +431,11 @@ setMethod("dbList", "filehashDB1",
               map <- getMap(db)
               if(length(map) == 0)
                   character(0)
-              else
-                  names(as.list(map, all.names = TRUE))
+              else {
+                  map.list <- as.list(map, all.names = TRUE)
+                  use <- !sapply(map.list, is.null)
+                  names(map.list)[use]
+              }
           })
 
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),

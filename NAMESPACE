@@ -1,5 +1,7 @@
 importFrom(utils, normalizePath)
 
+useDynLib(filehash)
+
 ## Classes
 exportClasses(
               "filehash",
