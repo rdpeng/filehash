@@ -122,8 +122,15 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
         map <- new.env(hash = TRUE, parent = emptyenv())
         pos <- 0
     }
+    if(pos < 0)
+        stop("'pos' cannot be negative")
+    filesize <- file.info(filename)$size
+
+    if(pos > filesize)
+        stop("'pos' cannot be greater than file size")
+    
     filename <- path.expand(summary(con)$description)
-    .Call("read_key_map", filename, map, file.info(filename)$size, pos)
+    .Call("read_key_map", filename, map, filesize, pos)
 }
 
 readKeyMap.orig <- function(con, map = NULL, pos = 0) {
