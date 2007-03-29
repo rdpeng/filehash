@@ -31,13 +31,8 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 	R_InitFileInPStream(&in, fp, R_pstream_any_format, NULL, NULL);
 
 	while(INTEGER(pos)[0] < INTEGER(filesize)[0]) {
-		key = R_Unserialize(&in);
-		datalen = R_Unserialize(&in);
-
-		if(!isString(key))
-			error("'key' is not a string");
-		if(!isInteger(datalen))
-			error("'datalen' is not an integer");
+		PROTECT(key = R_Unserialize(&in));
+		PROTECT(datalen = R_Unserialize(&in));
 
 		/* calculate the position of file pointer */
 		INTEGER(pos)[0] = ftell(fp);
@@ -56,6 +51,7 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 			defineVar(install(CHAR(STRING_ELT(key, 0))),
 				  R_NilValue, map);
 		}
+		UNPROTECT(2);
 	}
 	UNPROTECT(2);
 	fclose(fp);
