@@ -263,7 +263,7 @@ writeKeyValue <- function(con, key, value) {
                 byteData <- toBytes(value)
                 
                 ## Write out length of data
-                len <- length(byteData)
+                len <- as.integer(length(byteData))
                 serialize(len, con)
                 
                 ## Write out data
