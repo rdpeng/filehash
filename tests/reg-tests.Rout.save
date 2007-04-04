@@ -1,5 +1,5 @@
 
-R version 2.5.0 Under development (unstable) (2007-03-12 r40828)
+R version 2.5.0 alpha (2007-04-04 r41043)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(filehash)
-Simple key-value database (0.9-2 2007-03-12)
+Simple key-value database (0.9-4 2007-03-31)
 > 
 > ######################################################################
 > ## Test 'filehashDB' class
@@ -1467,5 +1467,43 @@ List of 7
 Warning messages:
 1: cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' 
 2: cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' 
+> 
+> 
+> 
+> ## Other tests
+> 
+> rm(list = ls())
+> 
+> 
+> dbCreate("testLoadingDB", "DB1")
+[1] TRUE
+> db <- dbInit("testLoadingDB", "DB1")
+> 
+> set.seed(234)
+> 
+> db$a <- rnorm(100)
+> db$b <- runif(1000)
+> 
+> dbLoad(db)  ## 'a', 'b'
+> summary(a)
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-3.036000 -0.642100  0.172000  0.004131  0.614100  2.107000 
+> summary(b)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.004583 0.229900 0.478600 0.482200 0.729200 0.999800 
+> 
+> rm(list = ls())
+> db <- dbInit("testLoadingDB", "DB1")
+> 
+> dbLazyLoad(db)
+> 
+> summary(a)
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-3.036000 -0.642100  0.172000  0.004131  0.614100  2.107000 
+> summary(b)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.004583 0.229900 0.478600 0.482200 0.729200 0.999800 
+> 
+> 
 > 
 > 
