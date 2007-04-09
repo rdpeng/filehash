@@ -68,7 +68,7 @@ setConnectionFinalizer <- function(metaEnv, con) {
         for(i in seq(along = conList)) {
             con <- getConnection(conList[[i]])
 
-            if(!is.null(con))
+            if(!is.null(con) && isOpen(con))
                 close(con)
         }
     })
@@ -98,6 +98,7 @@ initializeDB1 <- function(dbName) {
     con <- tryCatch({
         file(dbName, "a+b")
     }, error = function(err) {
+        message("database will be opened with read-only access")
         file(dbName, "rb")
     })
     metaEnv <- makeMetaEnv(con)
@@ -425,7 +426,8 @@ setMethod("dbUnlink", "filehashDB1",
 
 setMethod("dbDisconnect", "filehashDB1",
           function(db, ...) {
-              close(db@filecon)
+              if(isOpen(db@filecon))
+                  close(db@filecon)
           })
 
 setMethod("dbReorganize", "filehashDB1",
