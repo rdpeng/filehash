@@ -1,5 +1,5 @@
 
-R version 2.5.0 alpha (2007-04-04 r41043)
+R version 2.5.0 alpha (2007-04-09 r41097)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(filehash)
-Simple key-value database (0.9-4 2007-03-31)
+Simple key-value database (0.9-4 2007-04-09)
 > 
 > ######################################################################
 > ## Test 'filehashDB' class
