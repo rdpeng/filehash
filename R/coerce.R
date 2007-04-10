@@ -36,11 +36,6 @@ setAs("filehashDB1", "filehashRDS",
           toDBType(from, "RDS", dbpath)
       })
       
-setAs("filehashDB", "filehashRDS",
-      function(from) {
-          toDBType(from, "RDS")
-      })
-
 setAs("filehashDB1", "list",
       function(from) {
           keys <- dbList(from)
