@@ -75,8 +75,8 @@
 \section{Additional slots for "filehashDB1"}{
   \describe{
     \item{\code{datafile}:}{full path to the database file.}
-    \item{\code{filecon}:}{connection to the database file.}
-    \item{\code{meta}:}{list for database metadata.}
+    \item{\code{meta}:}{list containing an environment for database
+      metadata.}
   }
 }
 
@@ -86,19 +86,10 @@
   }
 }
 
-\section{Additional slots for "filehashDB"}{
-  \describe{
-    \item{\code{datafile}:}{Object of class \code{"character"}, full
-      path to the database file.}
-    \item{\code{mapfile}:}{Object of class \code{"character"}, full path
-      to the index file.}
-  }
-}
-
 \section{Methods}{
   \describe{
     \item{dbDelete}{The \code{dbDelete} function is for deleting
-      elements, but for the \code{"DB"} format all it does is remove the
+      elements, but for the \code{"DB1"} format all it does is remove the
       key from the lookup table. 
       The actual data are still in the database (but inaccessible).  If
       you reinsert data for the same key, the new data are simply

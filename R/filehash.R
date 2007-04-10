@@ -222,12 +222,6 @@ setMethod("lapply", signature(X = "filehash"),
               rval
           })
 
-## setGeneric("names")
-## setMethod("names", signature(x = "filehash"),
-##           function(x) {
-## 
-##           })
-
 ######################################################################
 ## Database interface
 
