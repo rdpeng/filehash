@@ -29,7 +29,6 @@ exportMethods(
 exportMethods("[[", "[", "[[<-", "$<-", "$")
 
 export(
-       "dbInitialize",
        "convertDB",
        "filehashOption",
        "registerFormatDB",
