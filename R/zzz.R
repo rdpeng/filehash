@@ -3,7 +3,7 @@
         stop("'methods' package required")
     assign("defaultType", "DB1", .filehashOptions)
 
-    for(type in c("DB1", "DB", "RDS")) {
+    for(type in c("DB1", "RDS")) {
         cname <- paste("create", type, sep = "")
         iname <- paste("initialize", type, sep = "")
         r <- list(create = get(cname, mode = "function"),

@@ -5,7 +5,6 @@ useDynLib(filehash)
 ## Classes
 exportClasses(
               "filehash",
-              "filehashDB",
               "filehashRDS",
               "filehashDB1"
               )
@@ -31,7 +30,6 @@ exportMethods(
 exportMethods("[[", "[", "[[<-", "$<-", "$")
 
 export(
-       "convertDB",
        "filehashOption",
        "registerFormatDB",
        "filehashFormats"
