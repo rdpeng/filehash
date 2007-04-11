@@ -1,6 +1,6 @@
 Package:  filehash
-Version:  0.9-4
-Date:  2007-04-09
+Version:  0.9-5
+Date:  2007-04-11
 LazyLoad:  yes
 Depends:  R (>= 2.4.1), methods
 Imports:  utils
