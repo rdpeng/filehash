@@ -94,13 +94,45 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
     }
     if(pos < 0)
         stop("'pos' cannot be negative")
-    filename <- path.expand(summary(con)$description)
-    filesize <- file.info(filename)$size
-
-    if(pos > filesize)
-        stop("'pos' cannot be greater than file size")
-
-    .Call("read_key_map", filename, map, filesize, pos)
+    if(is.null(filehashOption()$keyMapMethod)) {
+        seek(con, pos, "start", "read")
+        status <- NULL
+        
+        while(!inherits(status, "condition")) {
+            status <- tryCatch({
+                key <- unserialize(con)
+                datalen <- unserialize(con)
+                pos <- seek(con, rw = "read")  ## Update position
+                
+                if(datalen > 0) {
+                    ## Negative values of 'datalen' indicate deleted keys so only
+                    ## record positive 'datalen' values
+                    map[[key]] <- pos
+                    
+                    ## Fast forward to the next key
+                    seek(con, datalen, "current", "read")
+                    pos <- pos + datalen
+                }
+                else {
+                    ## Key is deleted; there is no data after it
+                    if(exists(key, map, inherits = FALSE))
+                        remove(list = key, pos = map)
+                }
+                NULL
+            }, error = function(err) {
+                err
+            })
+        } 
+    }
+    else {
+        filename <- path.expand(summary(con)$description)
+        filesize <- file.info(filename)$size
+        
+        if(pos > filesize)
+            stop("'pos' cannot be greater than file size")
+        
+        .Call("read_key_map", filename, map, filesize, pos)
+    }
 }
 
 convertDB1 <- function(old, new) {

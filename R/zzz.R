@@ -10,6 +10,7 @@
                   initialize = get(iname, mode="function"))
         assign(type, r, .filehashFormats)
     }
+    assign("keyMapMethod", "C", .filehashOptions)  ## The default (non-C) method
 }
 
 .onAttach <- function(lib, pkg) {
