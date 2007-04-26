@@ -1,3 +1,12 @@
+Version 1.0
+-----------
+
+* The 'DB' format has been removed; users should use 'DB1' instead
+
+* Internals of 'DB1' format have changed so that it should be a bit
+more reliable but perhaps a little slower
+
+
 Version 0.9
 -----------
 
