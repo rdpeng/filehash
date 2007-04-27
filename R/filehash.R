@@ -68,12 +68,6 @@ filehashFormats <- function(...) {
 }
 
 ######################################################################
-
-createEmptyFile <- function(name) {
-    ## If the file already exists, it is overwritten
-    file.create(name)
-}
-
 ## Create necessary database files.  On successful creation, return
 ## TRUE.  If the database already exists, don't do anything but return
 ## TRUE (and print a message).  If there's any other strange
