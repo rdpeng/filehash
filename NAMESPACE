@@ -18,7 +18,6 @@ exportMethods(
               "dbReorganize",
               "dbUnlink",
               "dbMultiFetch",
-              "dbDisconnect",
               "dbCreate",
               "dbInit",
               "dbLoad",

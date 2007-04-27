@@ -296,12 +296,6 @@ setMethod("getMap", "filehashDB1",
 ######################################################################
 ## Interface functions
 
-setMethod("dbReconnect", "filehashDB1",
-          function(db, ...) {
-              validObject(db)
-              db
-          })
-
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
           function(db, key, value, ...) {
@@ -372,11 +366,6 @@ setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
 setMethod("dbUnlink", "filehashDB1",
           function(db, ...) {
               file.remove(db@datafile)
-          })
-
-setMethod("dbDisconnect", "filehashDB1",
-          function(db, ...) {
-              invisible()
           })
 
 setMethod("dbReorganize", "filehashDB1",

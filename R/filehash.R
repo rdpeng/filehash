@@ -220,7 +220,6 @@ setMethod("lapply", signature(X = "filehash"),
 ## Database interface
 
 setGeneric("dbMultiFetch", function(db, key, ...) standardGeneric("dbMultiFetch"))
-setGeneric("dbReconnect", function(db, ...) standardGeneric("dbReconnect"))
 setGeneric("dbInsert", function(db, key, value, ...) standardGeneric("dbInsert"))
 setGeneric("dbFetch", function(db, key, ...) standardGeneric("dbFetch"))
 setGeneric("dbExists", function(db, key, ...) standardGeneric("dbExists"))
@@ -228,7 +227,6 @@ setGeneric("dbList", function(db, ...) standardGeneric("dbList"))
 setGeneric("dbDelete", function(db, key, ...) standardGeneric("dbDelete"))
 setGeneric("dbReorganize", function(db, ...) standardGeneric("dbReorganize"))
 setGeneric("dbUnlink", function(db, ...) standardGeneric("dbUnlink"))
-setGeneric("dbDisconnect", function(db, ...) standardGeneric("dbDisconnect"))
 
 ######################################################################
 ## Extractor/replacement
