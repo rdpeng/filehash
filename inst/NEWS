@@ -1,3 +1,16 @@
+Version 1.0
+-----------
+
+* The 'DB' format has been removed; users should use 'DB1' instead
+
+* Internals of 'DB1' format have changed so that it should be a bit
+more reliable but perhaps a little slower
+
+* The 'dbDisconnect' generic has been removed since it is no longer
+necessary for the 'DB1' format (as it was before).  It was never
+needed for the 'RDS' format and one never existed for that format.
+
+
 Version 0.9
 -----------
 

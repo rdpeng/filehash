@@ -68,12 +68,6 @@ filehashFormats <- function(...) {
 }
 
 ######################################################################
-
-createEmptyFile <- function(name) {
-    ## If the file already exists, it is overwritten
-    file.create(name)
-}
-
 ## Create necessary database files.  On successful creation, return
 ## TRUE.  If the database already exists, don't do anything but return
 ## TRUE (and print a message).  If there's any other strange
@@ -226,7 +220,6 @@ setMethod("lapply", signature(X = "filehash"),
 ## Database interface
 
 setGeneric("dbMultiFetch", function(db, key, ...) standardGeneric("dbMultiFetch"))
-setGeneric("dbReconnect", function(db, ...) standardGeneric("dbReconnect"))
 setGeneric("dbInsert", function(db, key, value, ...) standardGeneric("dbInsert"))
 setGeneric("dbFetch", function(db, key, ...) standardGeneric("dbFetch"))
 setGeneric("dbExists", function(db, key, ...) standardGeneric("dbExists"))
@@ -234,7 +227,6 @@ setGeneric("dbList", function(db, ...) standardGeneric("dbList"))
 setGeneric("dbDelete", function(db, key, ...) standardGeneric("dbDelete"))
 setGeneric("dbReorganize", function(db, ...) standardGeneric("dbReorganize"))
 setGeneric("dbUnlink", function(db, ...) standardGeneric("dbUnlink"))
-setGeneric("dbDisconnect", function(db, ...) standardGeneric("dbDisconnect"))
 
 ######################################################################
 ## Extractor/replacement

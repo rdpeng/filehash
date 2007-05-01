@@ -12,7 +12,6 @@
 \alias{dbDelete}
 \alias{dbReorganize}
 \alias{dbUnlink}
-\alias{dbDisconnect}
 \alias{dbDelete,filehashDB,character-method}
 \alias{dbExists,filehashDB,character-method}
 \alias{dbFetch,filehashDB,character-method}
@@ -28,7 +27,6 @@
 \alias{dbInsert,filehashDB1,character-method}
 \alias{dbList,filehashDB1-method}
 \alias{dbUnlink,filehashDB1-method}
-\alias{dbDisconnect,filehashDB1-method}
 \alias{dbReorganize,filehashDB1-method}
 \alias{dbDelete,filehashRDS,character-method}
 \alias{dbExists,filehashRDS,character-method}
@@ -112,8 +110,6 @@
       \emph{experimental}.  \code{dbReorganize} is not needed when using
       the \code{"RDS"} format.}
     \item{dbUnlink}{delete an entire database from the disk}
-    \item{dbDisconnect}{close any open connections associated with a
-      database object.}
     \item{show}{print method}
     \item{with}{allows \code{with} to be used with \code{"filehash"}
       objects much like it can be used with lists or data frames}

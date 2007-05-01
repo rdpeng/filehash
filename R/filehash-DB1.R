@@ -50,7 +50,7 @@ createDB1 <- function(dbName) {
     if(!hasWorkingFtell())
         stop("need working 'ftell()' to use DB1 format")
     if(!file.exists(dbName))
-        createEmptyFile(dbName)
+        file.create(dbName)
     else
         message(gettextf("database '%s' already exists", dbName))
     TRUE
@@ -252,7 +252,7 @@ lockFileName <- function(con) {
 
 createLockFile <- function(con) {
     lockfile <- lockFileName(con)
-    createEmptyFile(lockfile)
+    file.create(lockfile)
 }
 
 deleteLockFile <- function(con) {
@@ -309,12 +309,6 @@ setMethod("getMap", "filehashDB1",
 
 ######################################################################
 ## Interface functions
-
-setMethod("dbReconnect", "filehashDB1",
-          function(db, ...) {
-              validObject(db)
-              db
-          })
 
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
@@ -389,11 +383,6 @@ setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
 setMethod("dbUnlink", "filehashDB1",
           function(db, ...) {
               file.remove(db@datafile)
-          })
-
-setMethod("dbDisconnect", "filehashDB1",
-          function(db, ...) {
-              invisible()
           })
 
 setMethod("dbReorganize", "filehashDB1",
