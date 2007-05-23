@@ -212,7 +212,7 @@ writeKeyValue <- function(con, key, value) {
                 writeKey(con, key)
         
                 ## Serialize data to raw bytes
-                byteData <- toBytes(value)
+                byteData <- serialize(value, NULL)
                 
                 ## Write out length of data
                 len <- length(byteData)
