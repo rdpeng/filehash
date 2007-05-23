@@ -274,14 +274,6 @@ setMethod("[", signature(x = "filehash", i = "ANY", j = "ANY", drop = "missing")
 
 
 
-######################################################################
-## Miscellaneous
 
-
-## 'serialize()' changed from 2.3.0 to 2.4.0 so we need this function
-## for back compatibility
-toBytes <- function(x) {
-    serialize(x, NULL)
-}
 
 
