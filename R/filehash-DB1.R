@@ -48,7 +48,7 @@ setValidity("filehashDB1",
 
 createDB1 <- function(dbName) {
     if(!hasWorkingFtell())
-        stop("need working 'ftell()' to use DB1 format")
+        stop("need working 'ftell()' to use 'DB1' format")
     if(!file.exists(dbName))
         file.create(dbName)
     else
