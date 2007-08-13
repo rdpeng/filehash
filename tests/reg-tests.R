@@ -185,3 +185,36 @@ summary(b)
 
 
 
+################################################################################
+## Check dbReorganize
+
+dbCreate("test_reorg", "DB1")
+db <- dbInit("test_reorg", "DB1")
+
+set.seed(1000)
+dbInsert(db, "a", 1)
+dbInsert(db, "a", 1)
+dbInsert(db, "a", 1)
+dbInsert(db, "a", 1)
+dbInsert(db, "b", rnorm(1000))
+dbInsert(db, "b", rnorm(1000))
+dbInsert(db, "b", rnorm(1000))
+dbInsert(db, "b", rnorm(1000))
+dbInsert(db, "c", runif(1000))
+dbInsert(db, "c", runif(1000))
+dbInsert(db, "c", runif(1000))
+dbInsert(db, "c", runif(1000))
+
+summary(db$b)
+summary(db$c)
+
+print(file.info(db@datafile)$size)
+
+dbReorganize(db)
+
+db <- dbInit("test_reorg", "DB1")
+
+print(file.info(db@datafile)$size)
+
+summary(db$b)
+summary(db$c)
