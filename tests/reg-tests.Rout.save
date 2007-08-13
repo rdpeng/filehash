@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(filehash)
-Simple key-value database (1.0 2007-04-27)
+Simple key-value database (1.0-1 2007-08-13)
 > 
 > ######################################################################
 > ## Test 'filehashRDS' class
