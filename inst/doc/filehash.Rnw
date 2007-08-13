@@ -350,22 +350,6 @@ dbUnlink(db)
 rm(list = ls(all = TRUE))
 @ 
 
-\section{Cleaning up}
-
-When a database is initialized using the default ``DB1'' format, a
-file connection is opened for reading and writing to the database file
-on the disk.  This file connection remains open until the database is
-closed via \code{dbDisconnect} or the database object in R is removed.
-Since there is a hard limit on the number of file connections that can
-be open at once, some protection is need to make sure that file
-connections are close properly.  
-
-Upon initialization, the database stores the file connection number in
-an environment and registers a finalizer to close the connection.
-Once a database is closed or removed and garbage collection occurs,
-the finalizer is called and the file connection closed appropriately.
-
-
 \section{Other filehash utilities}
 
 There are a few other utilities included with the \pkg{filehash}
