@@ -406,11 +406,12 @@ setMethod("dbReorganize", "filehashDB1",
               keys <- dbList(db)
 
               ## Copy all keys to temporary database
+              message("reorganizing database contents...")
               for(key in keys) 
                   dbInsert(tempdb, key, dbFetch(db, key))
 
-              dbDisconnect(tempdb)
-              dbDisconnect(db)
+              ## dbDisconnect(tempdb)
+              ## dbDisconnect(db)
               status <- file.rename(tempdata, datafile)
               
               if(!isTRUE(status)) {
@@ -419,13 +420,14 @@ setMethod("dbReorganize", "filehashDB1",
                           tempdata)
                   return(FALSE)
               }
-              message("original database has been disconnected; ",
-                      "reload with 'dbInit'")
+              ## message("original database has been disconnected; ",
+              ##         "reload with 'dbInit'")
+              message("database reorganized; reload database with 'dbInit'")
               TRUE
           })
 
 
-######################################################################
+################################################################################
 ## Test system's ftell()
 
 hasWorkingFtell <- function() {
