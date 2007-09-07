@@ -1,5 +1,5 @@
 
-R version 2.5.0 (2007-04-23)
+R version 2.5.1 (2007-06-27)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(filehash)
-Simple key-value database (1.0 2007-04-27)
+Simple key-value database (1.0-1 2007-08-13)
 > 
 > ######################################################################
 > ## Test 'filehashRDS' class
@@ -98,11 +98,11 @@ NULL
 > tryCatch(print(env$c), error = function(e) print(e))
 <simpleError in dbFetch(db, key): error obtaining value for key 'c': unable to open connection>
 Warning message:
-cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' 
+cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' in: gzfile(ofile, "rb") 
 > tryCatch(dbFetch(db, "c"), error = function(e) print(e))
 <simpleError in dbFetch(db, "c"): error obtaining value for key 'c': unable to open connection>
 Warning message:
-cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' 
+cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' in: gzfile(ofile, "rb") 
 > 
 > 
 > ######################################################################
@@ -1024,8 +1024,8 @@ List of 7
 <simpleError in dbFetch(db, key): error obtaining value for key 'c': unable to open connection>
 <simpleError in dbFetch(db, "c"): error obtaining value for key 'c': unable to open connection>
 Warning messages:
-1: cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' 
-2: cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' 
+1: cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' in: gzfile(ofile, "rb") 
+2: cannot open compressed file '/home/rpeng/projects/R-packages/filehash.Rcheck/tests/mydbRDS/c' in: gzfile(ofile, "rb") 
 > 
 > 
 > 
@@ -1065,4 +1065,51 @@ Warning messages:
 > 
 > 
 > 
+> ################################################################################
+> ## Check dbReorganize
+> 
+> dbCreate("test_reorg", "DB1")
+[1] TRUE
+> db <- dbInit("test_reorg", "DB1")
+> 
+> set.seed(1000)
+> dbInsert(db, "a", 1)
+> dbInsert(db, "a", 1)
+> dbInsert(db, "a", 1)
+> dbInsert(db, "a", 1)
+> dbInsert(db, "b", rnorm(1000))
+> dbInsert(db, "b", rnorm(1000))
+> dbInsert(db, "b", rnorm(1000))
+> dbInsert(db, "b", rnorm(1000))
+> dbInsert(db, "c", runif(1000))
+> dbInsert(db, "c", runif(1000))
+> dbInsert(db, "c", runif(1000))
+> dbInsert(db, "c", runif(1000))
+> 
+> summary(db$b)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-2.76800 -0.65520 -0.06100 -0.01269  0.65240  3.73900 
+> summary(db$c)
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0002346 0.2416000 0.4813000 0.4938000 0.7492000 0.9992000 
+> 
+> print(file.info(db@datafile)$size)
+[1] 64980
+> 
+> dbReorganize(db)
+reorganizing database contents...
+database reorganized; reload database with 'dbInit'
+[1] TRUE
+> 
+> db <- dbInit("test_reorg", "DB1")
+> 
+> print(file.info(db@datafile)$size)
+[1] 16245
+> 
+> summary(db$b)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-2.76800 -0.65520 -0.06100 -0.01269  0.65240  3.73900 
+> summary(db$c)
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0002346 0.2416000 0.4813000 0.4938000 0.7492000 0.9992000 
 > 
