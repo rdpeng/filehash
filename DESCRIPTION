@@ -8,4 +8,4 @@ Title:  Simple key-value database
 Author:  Roger D. Peng <rpeng@jhsph.edu>
 Maintainer:  Roger D. Peng <rpeng@jhsph.edu>
 Description:  Simple key-value database
-License:  GNU GPL (version 2 or later)
+License:  GPL (>= 2)
