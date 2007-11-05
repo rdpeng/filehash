@@ -1,7 +1,7 @@
 Package:  filehash
-Version:  1.0-1
-Date:  2007-08-13
-Depends:  R (>= 2.4.1), methods
+Version:  1.0-2
+Date:  2007-11-05
+Depends:  R (>= 2.6.0), methods
 Imports:  utils
 Collate:  filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R zzz.R
 Title:  Simple key-value database
