@@ -40,6 +40,10 @@ dbDelete(db, "c")
 tryCatch(print(env$c), error = function(e) print(e))
 tryCatch(dbFetch(db, "c"), error = function(e) print(e))
 
+## Check trailing '/' problem
+dbCreate("testRDSdb", "RDS")
+db <- dbInit("testRDSdb/", "RDS")
+print(db)
 
 ######################################################################
 ## test filehashDB1 class
