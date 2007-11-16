@@ -17,7 +17,7 @@
 ## 02110-1301, USA
 #####################################################################
 
-######################################################################
+################################################################################
 ## Class 'filehashRDS'
 
 setClass("filehashRDS",
@@ -27,25 +27,27 @@ setClass("filehashRDS",
 
 setValidity("filehashRDS",
             function(object) {
-                if(length(object@dir) != 1)
-                    return("only one directory should be set in 'dir'")
-                if(!file.exists(object@dir))
-                    return(gettextf("directory '%s' does not exist", object@dir))
-                TRUE
+		    if(length(object@dir) != 1)
+			    return("only one directory should be set in 'dir'")
+		    if(!file.exists(object@dir))
+			    return(gettextf("directory '%s' does not exist",
+					    object@dir))
+		    TRUE
             })
 
 createRDS <- function(dbName) {
-    dir <- dbName
-    
-    if(!file.exists(dir))
-        dir.create(dir)
-    else
-        message(gettextf("database '%s' already exists", dbName))
-    TRUE
+	dir <- dbName
+	
+	if(!file.exists(dir))
+		dir.create(dir)
+	else
+		message(gettextf("database '%s' already exists", dbName))
+	TRUE
 }
 
 initializeRDS <- function(dbName) {
-    new("filehashRDS", dir = normalizePath(dbName), name = basename(dbName))
+	new("filehashRDS", dir = normalizePath(dbName),
+	    name = basename(dbName))
 }
 
 ## For case-insensitive file systems, objects with the same name but
@@ -54,87 +56,88 @@ initializeRDS <- function(dbName) {
 ## reverses the operation.
 
 mangleName <- function(oname) {
-    gsub("([A-Z])", "@\\1", oname, perl = TRUE)
+	gsub("([A-Z])", "@\\1", oname, perl = TRUE)
 }
 
 unMangleName <- function(mname) {
-    gsub("@", "", mname, fixed = TRUE)
+	gsub("@", "", mname, fixed = TRUE)
 }
 
 ## Function for mapping a key to a path on the filesystem
 setGeneric("objectFile", function(db, key) standardGeneric("objectFile"))
 setMethod("objectFile", signature(db = "filehashRDS", key = "character"),
           function(db, key) {
-              file.path(db@dir, mangleName(key))
+		  file.path(db@dir, mangleName(key))
           })
 
-######################################################################
+################################################################################
 ## Interface functions
 
 setMethod("dbInsert",
           signature(db = "filehashRDS", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-              ## open connection to a gzip compressed file
-              con <- gzfile(objectFile(db, key), "wb")
+		  ## open connection to a gzip compressed file
+		  con <- gzfile(objectFile(db, key), "wb")
 
-              ## serialize data to connection; return TRUE on success
-              tryCatch({
-                  serialize(value, con)
-              }, error = function(err) {
-                  err
-              }, interrupt = function(cond) {
-                  cond
-              }, finally = close(con))
+		  ## serialize data to connection; return TRUE on success
+		  tryCatch({
+			  serialize(value, con)
+		  }, error = function(err) {
+			  err
+		  }, interrupt = function(cond) {
+			  cond
+		  }, finally = close(con))
           }
           )
 
 setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
-              ## create filename from key
-              ofile <- objectFile(db, key)
+		  ## create filename from key
+		  ofile <- objectFile(db, key)
 
-              con <- tryCatch({
-                  gzfile(ofile, "rb")
-              }, error = function(cond) {
-                  cond
-              })
-              if(inherits(con, "condition")) 
-                  stop(gettextf("error obtaining value for key '%s': %s", key,
-                                conditionMessage(con)))
-              on.exit(close(con))
-              
-              val <- unserialize(con)
-              val
+		  con <- tryCatch({
+			  gzfile(ofile, "rb")
+		  }, error = function(cond) {
+			  cond
+		  })
+		  if(inherits(con, "condition")) 
+			  stop(gettextf("error obtaining value for key '%s': %s",
+					key,
+					conditionMessage(con)))
+		  on.exit(close(con))
+		  
+		  val <- unserialize(con)
+		  val
           })
 
 setMethod("dbExists", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
-              key %in% dbList(db)
+		  key %in% dbList(db)
           })
 
 setMethod("dbList", "filehashRDS",
           function(db, ...) {
-              ## list all keys/files in the database
-              fileList <- dir(db@dir, all.files = TRUE, full.names = TRUE)
-              use <- !file.info(fileList)$isdir
-              fileList <- basename(fileList[use])
+		  ## list all keys/files in the database
+		  fileList <- dir(db@dir, all.files = TRUE, full.names = TRUE)
+		  use <- !file.info(fileList)$isdir
+		  fileList <- basename(fileList[use])
 
-              unMangleName(fileList)
+		  unMangleName(fileList)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
-              ofile <- objectFile(db, key)
-              
-              ## remove/delete the file
-              status <- file.remove(ofile)
-              isTRUE(status)
+		  ofile <- objectFile(db, key)
+		  
+		  ## remove/delete the file
+		  status <- file.remove(ofile)
+		  isTRUE(status)
           })
 
 setMethod("dbUnlink", "filehashRDS",
           function(db, ...) {
-              ## delete the entire database directory
-              d <- db@dir
-              unlink(d, recursive = TRUE)
+		  ## delete the entire database directory
+		  d <- db@dir
+		  unlink(d, recursive = TRUE)
           })
 
