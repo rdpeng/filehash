@@ -46,6 +46,8 @@ createRDS <- function(dbName) {
 }
 
 initializeRDS <- function(dbName) {
+	## Trailing '/' causes a problem in Windows?
+	dbName <- sub("/$", "", dbName, perl = TRUE)
 	new("filehashRDS", dir = normalizePath(dbName),
 	    name = basename(dbName))
 }
