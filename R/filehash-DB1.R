@@ -40,7 +40,8 @@ setClass("filehashDB1",
 setValidity("filehashDB1",
             function(object) {
                     if(!file.exists(object@datafile))
-                            return(gettextf("datafile '%s' does not exist", datafile))
+                            return(gettextf("datafile '%s' does not exist",
+                                            datafile))
                     if(is.null(object@meta$metaEnv))
                             return(gettextf("object is missing 'metaEnv' element"))
                     TRUE
@@ -100,7 +101,8 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
                         pos <- seek(con, rw = "read")  ## Update position
 
                         if(datalen > 0) {
-                                ## Negative values of 'datalen' indicate deleted keys so only
+                                ## Negative values of 'datalen'
+                                ## indicate deleted keys so only
                                 ## record positive 'datalen' values
                                 map[[key]] <- pos
 
@@ -198,8 +200,9 @@ writeKeyValue <- function(con, key, value) {
         writestart <- findEndPos(con)
 
         handler <- function(cond) {
-                ## Rewind the file back to where writing began and truncate at
-                ## that position; this is probably a bad idea for files > 2GB
+                ## Rewind the file back to where writing began and
+                ## truncate at that position; this is probably a bad
+                ## idea for files > 2GB
                 seek(con, writestart, "start", "write")
                 truncate(con)
                 cond
