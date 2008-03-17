@@ -36,10 +36,13 @@ setValidity("filehashRDS",
             })
 
 createRDS <- function(dbName) {
-        dir <- dbName
-        
-        if(!file.exists(dir))
-                dir.create(dir)
+        if(!file.exists(dbName)) {
+                status <- dir.create(dbName)
+
+                if(!status)
+                        stop(gettextf("unable to create database directory '%s'",
+                                      dbName))
+        }
         else
                 message(gettextf("database '%s' already exists", dbName))
         TRUE
@@ -130,7 +133,7 @@ setMethod("dbList", "filehashRDS",
 setMethod("dbDelete", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   ofile <- objectFile(db, key)
-                  
+
                   ## remove/delete the file
                   status <- file.remove(ofile)
                   isTRUE(status)
