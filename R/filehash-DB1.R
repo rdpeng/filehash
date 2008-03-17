@@ -50,8 +50,13 @@ setValidity("filehashDB1",
 createDB1 <- function(dbName) {
         if(!hasWorkingFtell())
                 stop("need working 'ftell()' to use 'DB1' format")
-        if(!file.exists(dbName))
-                file.create(dbName)
+        if(!file.exists(dbName)) {
+                status <- file.create(dbName)
+
+                if(!status)
+                        stop(gettextf("unable to create database file '%s'",
+                                      dbName))
+        }
         else
                 message(gettextf("database '%s' already exists", dbName))
         TRUE
