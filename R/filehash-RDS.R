@@ -80,25 +80,32 @@ setMethod("objectFile", signature(db = "filehashRDS", key = "character"),
 
 setMethod("dbInsert",
           signature(db = "filehashRDS", key = "character", value = "ANY"),
-          function(db, key, value, ...) {
-                  tmp <- tempfile()
-                  tmpcon <- gzfile(tmp, "wb")
+          function(db, key, value, safe = TRUE, ...) {
+                  writefile <- if(safe)
+                          tempfile()
+                  else
+                          objectFile(db, key)
+                  con <- gzfile(writefile, "wb")
 
                   writestatus <- tryCatch({
-                          serialize(value, tmpcon)
+                          serialize(value, con)
                   }, error = function(err) {
                           err
                   }, finally = {
-                          close(tmpcon)
+                          close(con)
                   })
                   if(inherits(writestatus, "condition"))
                           stop(gettextf("unable to write object '%s'", key))
-                  cpstatus <- file.copy(tmp, objectFile(db, key))
+                  if(!safe)
+                          return(!inherits(writestatus, "condition"))
+
+                  cpstatus <- file.copy(writefile, objectFile(db, key),
+                                        overwrite = TRUE)
 
                   if(!cpstatus)
                           stop(gettextf("unable to insert object '%s'", key))
                   else {
-                          rmstatus <- file.remove(tmp)
+                          rmstatus <- file.remove(writefile)
 
                           if(!rmstatus)
                                   warning("unable to remove temporary file")
