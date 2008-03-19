@@ -84,7 +84,6 @@ setMethod("dbInsert",
                   ## open connection to a gzip compressed file
                   con <- gzfile(objectFile(db, key), "wb")
 
-                  ## serialize data to connection; return TRUE on success
                   tryCatch({
                           serialize(value, con)
                   }, error = function(err) {
