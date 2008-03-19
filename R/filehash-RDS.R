@@ -81,18 +81,30 @@ setMethod("objectFile", signature(db = "filehashRDS", key = "character"),
 setMethod("dbInsert",
           signature(db = "filehashRDS", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-                  ## open connection to a gzip compressed file
-                  con <- gzfile(objectFile(db, key), "wb")
+                  tmp <- tempfile()
+                  tmpcon <- gzfile(tmp, "wb")
 
-                  tryCatch({
-                          serialize(value, con)
+                  writestatus <- tryCatch({
+                          serialize(value, tmpcon)
                   }, error = function(err) {
                           err
-                  }, interrupt = function(cond) {
-                          cond
-                  }, finally = close(con))
-          }
-          )
+                  }, finally = {
+                          close(tmpcon)
+                  })
+                  if(inherits(writestatus, "condition"))
+                          stop(gettextf("unable to write object '%s'", key))
+                  cpstatus <- file.copy(tmp, objectFile(db, key))
+
+                  if(!cpstatus)
+                          stop(gettextf("unable to insert object '%s'", key))
+                  else {
+                          rmstatus <- file.remove(tmp)
+
+                          if(!rmstatus)
+                                  warning("unable to remove temporary file")
+                  }
+                  invisible(cpstatus)
+          })
 
 setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
@@ -106,8 +118,7 @@ setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
                   })
                   if(inherits(con, "condition")) 
                           stop(gettextf("error obtaining value for key '%s': %s",
-                                        key,
-                                        conditionMessage(con)))
+                                        key, conditionMessage(con)))
                   on.exit(close(con))
                   
                   val <- unserialize(con)
