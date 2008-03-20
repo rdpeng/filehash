@@ -153,13 +153,14 @@ setMethod("dbDelete", signature(db = "filehashRDS", key = "character"),
 
                   ## remove/delete the file
                   status <- file.remove(ofile)
-                  isTRUE(status)
+                  invisible(isTRUE(status))
           })
 
 setMethod("dbUnlink", "filehashRDS",
           function(db, ...) {
                   ## delete the entire database directory
                   d <- db@dir
-                  unlink(d, recursive = TRUE)
+                  status <- unlink(d, recursive = TRUE)
+                  invisible(status)
           })
 
