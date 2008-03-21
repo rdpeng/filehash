@@ -119,10 +119,12 @@ setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
                   ofile <- objectFile(db, key)
 
                   ## Open connection
-                  con <- try({
+                  con <- tryCatch({
                           gzfile(ofile, "rb")
-                  }, silent = TRUE)
-                  if(inherits(con, "try-error")) 
+                  }, condition = function(cond) {
+                          cond
+                  })
+                  if(inherits(con, "condition")) 
                           stop(gettextf("unable to obtain value for key '%s'",
                                         key))
                   on.exit(close(con))
