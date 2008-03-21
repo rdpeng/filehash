@@ -89,15 +89,15 @@ setMethod("dbInsert",
 
                   writestatus <- tryCatch({
                           serialize(value, con)
-                  }, error = function(err) {
-                          err
+                  }, condition = function(cond) {
+                          cond
                   }, finally = {
                           close(con)
                   })
                   if(inherits(writestatus, "condition"))
                           stop(gettextf("unable to write object '%s'", key))
                   if(!safe)
-                          return(!inherits(writestatus, "condition"))
+                          return(invisible(!inherits(writestatus, "condition")))
 
                   cpstatus <- file.copy(writefile, objectFile(db, key),
                                         overwrite = TRUE)
@@ -115,19 +115,21 @@ setMethod("dbInsert",
 
 setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
-                  ## create filename from key
+                  ## Create filename from key
                   ofile <- objectFile(db, key)
 
+                  ## Open connection
                   con <- tryCatch({
                           gzfile(ofile, "rb")
-                  }, error = function(cond) {
+                  }, condition = function(cond) {
                           cond
                   })
                   if(inherits(con, "condition")) 
-                          stop(gettextf("error obtaining value for key '%s': %s",
-                                        key, conditionMessage(con)))
+                          stop(gettextf("error obtaining value for key '%s'",
+                                        key))
                   on.exit(close(con))
-                  
+
+                  ## Read data
                   val <- unserialize(con)
                   val
           })
