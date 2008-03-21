@@ -154,7 +154,7 @@ readSingleKey <- function(con, map, key) {
         start <- map[[key]]
 
         if(is.null(start))
-                stop(gettextf("'%s' not in database", key))
+                stop(gettextf("unable to obtain value for key '%s'", key))
 
         seek(con, start, rw = "read")
         unserialize(con)
