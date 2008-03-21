@@ -78,8 +78,8 @@ print(env$a)
 
 dbDelete(db, "c")
 
-tryCatch(print(env$c), error = function(e) as.character(e))
-tryCatch(dbFetch(db, "c"), error = function(e) as.character(e))
+tryCatch(print(env$c), error = function(e) cat(as.character(e)))
+tryCatch(dbFetch(db, "c"), error = function(e) cat(as.character(e)))
 
 numbers <- rnorm(100)
 dbInsert(db, "numbers", numbers)
@@ -150,8 +150,8 @@ for(type in types) {
 
     dbDelete(db, "c")
 
-    tryCatch(print(env$c), error = function(e) print(e))
-    tryCatch(dbFetch(db, "c"), error = function(e) print(e))
+    tryCatch(print(env$c), error = function(e) cat(as.character(e)))
+    tryCatch(dbFetch(db, "c"), error = function(e) cat(as.character(e)))
     
     numbers <- rnorm(100)
     dbInsert(db, "numbers", numbers)
