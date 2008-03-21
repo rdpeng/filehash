@@ -302,7 +302,10 @@ setMethod("getMap", "filehashDB1",
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-                  filecon <- file(db@datafile, "ab")
+                  filecon <- try(file(db@datafile, "ab"), silent = TRUE)
+
+                  if(inherits(filecon, "try-error"))
+                          stop("unable to open connection to database")
                   on.exit(close(filecon))
                   writeKeyValue(filecon, key, value)
           })
@@ -310,7 +313,10 @@ setMethod("dbInsert",
 setMethod("dbFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- file(db@datafile, "rb")
+                  filecon <- try(file(db@datafile, "rb"), silent = TRUE)
+
+                  if(inherits(filecon, "try-error"))
+                          stop("unable to open connection to database")
                   on.exit(close(filecon))
 
                   checkMap(db, filecon)
