@@ -191,8 +191,6 @@ writeNullKeyValue <- function(con, key) {
                         })
                         break
                 }
-                else
-                        next
         }
 }
 
@@ -234,8 +232,6 @@ writeKeyValue <- function(con, key, value) {
                         })
                         break
                 }
-                else
-                        next
         }
 }
 
