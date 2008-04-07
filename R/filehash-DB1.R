@@ -398,10 +398,21 @@ setMethod("dbReorganize", "filehashDB1",
                   keys <- dbList(db)
 
                   ## Copy all keys to temporary database
-                  message("reorganizing database contents...")
-                  for(key in keys)
+                  nkeys <- length(keys)
+                  cat("Reorganizing database: ")
+
+                  for(i in seq_along(keys)) {
+                          key <- keys[i]
+                          msg <- sprintf("%d%% (%d/%d)", round (100 * i / nkeys),
+                                         i, nkeys)
+                          cat(msg)
+
                           dbInsert(tempdb, key, dbFetch(db, key))
 
+                          back <- paste(rep("\b", nchar(msg)), collapse = "")
+                          cat(back)
+                  }
+                  cat("\n")
                   status <- file.rename(tempdata, datafile)
 
                   if(!isTRUE(status)) {
@@ -411,7 +422,7 @@ setMethod("dbReorganize", "filehashDB1",
                           return(FALSE)
                   }
                   on.exit()
-                  message("database reorganized; reload database with 'dbInit'")
+                  message("Finished; reload database with 'dbInit'")
                   TRUE
           })
 
