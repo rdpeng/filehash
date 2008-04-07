@@ -402,8 +402,6 @@ setMethod("dbReorganize", "filehashDB1",
                   for(key in keys)
                           dbInsert(tempdb, key, dbFetch(db, key))
 
-                  ## dbDisconnect(tempdb)
-                  ## dbDisconnect(db)
                   status <- file.rename(tempdata, datafile)
 
                   if(!isTRUE(status)) {
@@ -412,8 +410,7 @@ setMethod("dbReorganize", "filehashDB1",
                                   tempdata)
                           return(FALSE)
                   }
-                  ## message("original database has been disconnected; ",
-                  ##         "reload with 'dbInit'")
+                  on.exit()
                   message("database reorganized; reload database with 'dbInit'")
                   TRUE
           })
