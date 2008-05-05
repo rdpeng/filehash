@@ -100,7 +100,11 @@
     \item{dbMultiFetch}{retrieve values associated with multiple keys (a
       list of those values is returned).}
     \item{dbInsert}{insert a key-value pair into the database.  If
-      that key already exists, its associated value is overwritten.}
+      that key already exists, its associated value is overwritten. For
+      \code{"RDS"} type databases, there is a \code{safe} option
+      (defaults to \code{TRUE}) which allows the user to insert objects
+      somewhat more safely (objects should not be lost in the event of
+      an interrupt).}
     \item{dbList}{list all keys in the database.}
     \item{dbReorganize}{The \code{dbReorganize} function is there for
       the purpose of rewriting the database to remove all of the stale

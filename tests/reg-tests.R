@@ -37,9 +37,13 @@ print(env$a)
 
 dbDelete(db, "c")
 
-tryCatch(print(env$c), error = function(e) print(e))
-tryCatch(dbFetch(db, "c"), error = function(e) print(e))
+tryCatch(print(env$c), error = function(e) cat(as.character(e)))
+tryCatch(dbFetch(db, "c"), error = function(e) cat(as.character(e)))
 
+## Check trailing '/' problem
+dbCreate("testRDSdb", "RDS")
+db <- dbInit("testRDSdb/", "RDS")
+print(db)
 
 ######################################################################
 ## test filehashDB1 class
@@ -74,8 +78,8 @@ print(env$a)
 
 dbDelete(db, "c")
 
-tryCatch(print(env$c), error = function(e) print(e))
-tryCatch(dbFetch(db, "c"), error = function(e) print(e))
+tryCatch(print(env$c), error = function(e) cat(as.character(e)))
+tryCatch(dbFetch(db, "c"), error = function(e) cat(as.character(e)))
 
 numbers <- rnorm(100)
 dbInsert(db, "numbers", numbers)
@@ -83,81 +87,7 @@ b <- dbFetch(db, "numbers")
 stopifnot(all.equal(numbers, b))
 stopifnot(identical(numbers, b))
 
-
-
-
-######################################################################
-######################################################################
-## Test everything on all database formats
-
-types <- c("DB1", "RDS")
-set.seed(1000)
-
-for(type in types) {
-    cat("-----------------\n")
-    cat("-----------------\n")
-    cat("TESTING TYPE", type, "\n")
-    cat("-----------------\n")
-    cat("-----------------\n")
-
-    name <- paste("mydb", type, sep = "")
-    dbCreate(name, type)
-    db <- dbInit(name, type)
-
-    dbInsert(db, "a", 1:10)  ## integer
-    dbInsert(db, "b", rnorm(100))  ## numeric
-    dbInsert(db, "c", 100:1)  ## integer
-    dbInsert(db, "d", runif(1000))  ## numeric
-    dbInsert(db, "other", "hello")  ## character
-
-    ## Use extractor/replacement methods
-    db$list <- as.list(1:100)
-    db$dataf <- data.frame(x = rnorm(2000), y = rnorm(2000), z = rnorm(2000))
-
-    show(db)
-
-    str(db$dataf)
-    str(db$list)
-    print(db$d)
-    print(db$a)
-    print(db$b)
-    print(db$c)
-    print(db$other)
-        
-    env <- db2env(db)
-    ls(env)
-    
-    print(env$a)
-    print(env$b)
-    print(env$c)
-    str(env$d)
-    print(env$other)
-
-    env$b <- rnorm(100)
-    mean(env$b)
-    
-    env$a[1:5] <- 5:1
-    print(env$a)
-
-    with(db, print(mean(b)))
-
-    r <- lapply(db, summary)
-    str(r)
-
-    dbDelete(db, "c")
-
-    tryCatch(print(env$c), error = function(e) print(e))
-    tryCatch(dbFetch(db, "c"), error = function(e) print(e))
-    
-    numbers <- rnorm(100)
-    dbInsert(db, "numbers", numbers)
-    b <- dbFetch(db, "numbers")
-    stopifnot(all.equal(numbers, b))
-    stopifnot(identical(numbers, b))
-}
-
-
-
+################################################################################
 ## Other tests
 
 rm(list = ls())

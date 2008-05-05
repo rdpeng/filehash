@@ -39,50 +39,56 @@ setClass("filehashDB1",
 
 setValidity("filehashDB1",
             function(object) {
-                if(!file.exists(object@datafile))
-                    return(gettextf("datafile '%s' does not exist", datafile))
-                if(is.null(object@meta$metaEnv))
-                    return(gettextf("object is missing 'metaEnv' element"))
-                TRUE
+                    if(!file.exists(object@datafile))
+                            return(gettextf("datafile '%s' does not exist",
+                                            datafile))
+                    if(is.null(object@meta$metaEnv))
+                            return(gettextf("object is missing 'metaEnv' element"))
+                    TRUE
             })
 
 createDB1 <- function(dbName) {
-    if(!hasWorkingFtell())
-        stop("need working 'ftell()' to use 'DB1' format")
-    if(!file.exists(dbName))
-        file.create(dbName)
-    else
-        message(gettextf("database '%s' already exists", dbName))
-    TRUE
+        if(!hasWorkingFtell())
+                stop("need working 'ftell()' to use 'DB1' format")
+        if(!file.exists(dbName)) {
+                status <- file.create(dbName)
+
+                if(!status)
+                        stop(gettextf("unable to create database file '%s'",
+                                      dbName))
+        }
+        else
+                message(gettextf("database '%s' already exists", dbName))
+        TRUE
 }
 
 makeMetaEnv <- function(filename) {
-    ## Create database map and store in environment.  Don't read map
-    ## until you need it; for example, it's not needed for *writing*
-    ## to the database.    
-    metaEnv <- new.env(parent = emptyenv())
-    metaEnv$map <- NULL  ## 'NULL' indicates the map needs to be read
-    metaEnv$dbfilesize <- file.info(filename)$size 
+        ## Create database map and store in environment.  Don't read map
+        ## until you need it; for example, it's not needed for *writing*
+        ## to the database.
+        metaEnv <- new.env(parent = emptyenv())
+        metaEnv$map <- NULL  ## 'NULL' indicates the map needs to be read
+        metaEnv$dbfilesize <- file.info(filename)$size
 
-    metaEnv
+        metaEnv
 }
 
 initializeDB1 <- function(dbName) {
-    if(!hasWorkingFtell())
-        stop("need working 'ftell()' to use DB1 format")
-    dbName <- normalizePath(dbName)
-    
-    new("filehashDB1",
-        datafile = dbName,
-        meta = list(metaEnv = makeMetaEnv(dbName)),
-        name = basename(dbName)
-        )
+        if(!hasWorkingFtell())
+                stop("need working 'ftell()' to use DB1 format")
+        dbName <- normalizePath(dbName)
+
+        new("filehashDB1",
+            datafile = dbName,
+            meta = list(metaEnv = makeMetaEnv(dbName)),
+            name = basename(dbName)
+            )
 }
 
 
 findEndPos <- function(con) {
-    seek(con, 0, "end")
-    seek(con)
+        seek(con, 0, "end")
+        seek(con)
 }
 
 readKeyMap <- function(con, map = NULL, pos = 0) {
@@ -136,79 +142,78 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
 }
 
 convertDB1 <- function(old, new) {
-    dbCreate(new, "DB1")
-    newdb <- dbInit(new, "DB1")
+        dbCreate(new, "DB1")
+        newdb <- dbInit(new, "DB1")
 
-    con <- file(old, "rb")
-    on.exit(close(con))
+        con <- file(old, "rb")
+        on.exit(close(con))
 
-    endpos <- findEndPos(con)
-    pos <- 0
+        endpos <- findEndPos(con)
+        pos <- 0
 
-    while(pos < endpos) {
-        keylen <- readBin(con, "numeric", endian = "little")
-        key <- rawToChar(readBin(con, "raw", keylen))
-        datalen <- readBin(con, "numeric", endian = "little")
-        value <- unserialize(con)
+        while(pos < endpos) {
+                keylen <- readBin(con, "numeric", endian = "little")
+                key <- rawToChar(readBin(con, "raw", keylen))
+                datalen <- readBin(con, "numeric", endian = "little")
+                value <- unserialize(con)
 
-        dbInsert(newdb, key, value)
-        pos <- seek(con)
-    }
-    newdb
+                dbInsert(newdb, key, value)
+                pos <- seek(con)
+        }
+        newdb
 }
 
 readSingleKey <- function(con, map, key) {
-    start <- map[[key]]
+        start <- map[[key]]
 
-    if(is.null(start))
-        stop(gettextf("'%s' not in database", key))
+        if(is.null(start))
+                stop(gettextf("unable to obtain value for key '%s'", key))
 
-    seek(con, start, rw = "read")
-    unserialize(con)
+        seek(con, start, rw = "read")
+        unserialize(con)
 }
 
 readKeys <- function(con, map, keys) {
-    r <- lapply(keys, function(key) readSingleKey(con, map, key))
-    names(r) <- keys
-    r
+        r <- lapply(keys, function(key) readSingleKey(con, map, key))
+        names(r) <- keys
+        r
 }
 
 writeNullKeyValue <- function(con, key) {
-    writestart <- findEndPos(con)
+        writestart <- findEndPos(con)
 
-    handler <- function(cond) {
-        ## Rewind the file back to where writing began and truncate at
-        ## that position
-        seek(con, writestart, "start", "write")
-        truncate(con)
-        cond
-    }
-    repeat {
-        if(!isLocked(con)) {
-            createLockFile(con)
-
-            tryCatch({
-                writeKey(con, key)
-                
-                len <- as.integer(-1)
-                serialize(len, con)
-            }, interrupt = handler, error = handler, finally = {
-                flush(con)
-                deleteLockFile(con)
-            })
-            break
+        handler <- function(cond) {
+                ## Rewind the file back to where writing began and truncate at
+                ## that position
+                seek(con, writestart, "start", "write")
+                truncate(con)
+                cond
         }
-        else
-            next
-    }
+        repeat {
+                if(!isLocked(con)) {
+                        createLockFile(con)
+
+                        tryCatch({
+                                writeKey(con, key)
+
+                                len <- as.integer(-1)
+                                serialize(len, con)
+                        }, interrupt = handler, error = handler, finally = {
+                                flush(con)
+                                deleteLockFile(con)
+                        })
+                        break
+                }
+        }
 }
 
 writeKey <- function(con, key) {
-    ## Write out key
-    serialize(key, con)
+        ## Write out key
+        serialize(key, con)
 }
 
 writeKeyValue <- function(con, key, value) {
+<<<<<<< HEAD:R/filehash-DB1.R
     writestart <- findEndPos(con)
 
     handler <- function(cond) {
@@ -239,32 +244,63 @@ writeKeyValue <- function(con, key, value) {
                 deleteLockFile(con)
             })
             break
+=======
+        writestart <- findEndPos(con)
+
+        handler <- function(cond) {
+                ## Rewind the file back to where writing began and
+                ## truncate at that position; this is probably a bad
+                ## idea for files > 2GB
+                seek(con, writestart, "start", "write")
+                truncate(con)
+                cond
         }
-        else 
-            next
-    }
+        repeat {
+                if(!isLocked(con)) {
+                        createLockFile(con)
+
+                        tryCatch({
+                                writeKey(con, key)
+
+                                ## Serialize data to raw bytes
+                                byteData <- serialize(value, NULL)
+
+                                ## Write out length of data
+                                len <- length(byteData)
+                                serialize(len, con)
+
+                                ## Write out data
+                                writeBin(byteData, con)
+                        }, interrupt = handler, error = handler, finally = {
+                                flush(con)
+                                deleteLockFile(con)
+                        })
+                        break
+                }
+>>>>>>> master:R/filehash-DB1.R
+        }
 }
 
 lockFileName <- function(con) {
-    ## Use 3 underscores for lock file
-    paste(summary(con)$description, "LOCK", sep = "___")
+        ## Use 3 underscores for lock file
+        paste(summary(con)$description, "LOCK", sep = "___")
 }
 
 createLockFile <- function(con) {
-    lockfile <- lockFileName(con)
-    file.create(lockfile)
+        lockfile <- lockFileName(con)
+        file.create(lockfile)
 }
 
 deleteLockFile <- function(con) {
-    if(isLocked(con)) {
-        lockfile <- lockFileName(con)
-        file.remove(lockfile)
-    }        
+        if(isLocked(con)) {
+                lockfile <- lockFileName(con)
+                file.remove(lockfile)
+        }
 }
 
 isLocked <- function(con) {
-    lockfile <- lockFileName(con)
-    isTRUE( file.exists(lockfile) )
+        lockfile <- lockFileName(con)
+        isTRUE( file.exists(lockfile) )
 }
 
 ######################################################################
@@ -276,27 +312,26 @@ setGeneric("checkMap", function(db, ...) standardGeneric("checkMap"))
 
 setMethod("checkMap", "filehashDB1",
           function(db, filecon, ...) {
-              old.size <- get("dbfilesize", db@meta$metaEnv)
-              cur.size <- tryCatch({
-                  filesize(filecon)
-              }, error = function(err) {
-                  old.size
-              })
-              size.change <- old.size != cur.size
-              map.orig <- getMap(db)
+                  old.size <- get("dbfilesize", db@meta$metaEnv)
+                  cur.size <- tryCatch({
+                          filesize(filecon)
+                  }, error = function(err) {
+                          old.size
+                  })
+                  size.change <- old.size != cur.size
+                  map.orig <- getMap(db)
 
-              map <- if(is.null(map.orig))
-                  readKeyMap(filecon)
-              else if(size.change)
-                  readKeyMap(filecon, map.orig, old.size)
-              else
-                  map.orig
-              
-              if(!identical(map, map.orig)) {
-                  assign("map", map, db@meta$metaEnv)
-                  assign("dbfilesize", cur.size, db@meta$metaEnv)
-              }
-              invisible(db)
+                  map <- if(is.null(map.orig))
+                          readKeyMap(filecon)
+                  else if(size.change)
+                          readKeyMap(filecon, map.orig, old.size)
+                  else
+                          map.orig
+                  if(!identical(map, map.orig)) {
+                          assign("map", map, db@meta$metaEnv)
+                          assign("dbfilesize", cur.size, db@meta$metaEnv)
+                  }
+                  invisible(db)
           })
 
 
@@ -304,7 +339,7 @@ setGeneric("getMap", function(db) standardGeneric("getMap"))
 
 setMethod("getMap", "filehashDB1",
           function(db) {
-              get("map", db@meta$metaEnv)
+                  get("map", db@meta$metaEnv)
           })
 
 ######################################################################
@@ -313,50 +348,57 @@ setMethod("getMap", "filehashDB1",
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-              filecon <- file(db@datafile, "ab")
-              on.exit(close(filecon))
-              writeKeyValue(filecon, key, value)
+                  filecon <- try(file(db@datafile, "ab"), silent = TRUE)
+
+                  if(inherits(filecon, "try-error"))
+                          stop("unable to open connection to database")
+                  on.exit(close(filecon))
+                  writeKeyValue(filecon, key, value)
           })
 
 setMethod("dbFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-              filecon <- file(db@datafile, "rb")
-              on.exit(close(filecon))
+                  filecon <- try(file(db@datafile, "rb"), silent = TRUE)
 
-              checkMap(db, filecon)
-              map <- getMap(db)
-              
-              r <- readKeys(filecon, map, key[1])
-              r[[1]]
+                  if(inherits(filecon, "try-error"))
+                          stop("unable to open connection to database")
+                  on.exit(close(filecon))
+
+                  checkMap(db, filecon)
+                  map <- getMap(db)
+
+                  r <- readKeys(filecon, map, key[1])
+                  r[[1]]
           })
 
 setMethod("dbMultiFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-              filecon <- file(db@datafile, "rb")
-              on.exit(close(filecon))
+                  filecon <- file(db@datafile, "rb")
+                  on.exit(close(filecon))
 
-              checkMap(db, filecon)
-              map <- getMap(db)
+                  checkMap(db, filecon)
+                  map <- getMap(db)
 
-              readKeys(filecon, map, key)
+                  readKeys(filecon, map, key)
           })
 
 setMethod("[", signature(x = "filehashDB1", i = "character", j = "missing",
                          drop = "missing"),
           function(x, i , j, drop) {
-              dbMultiFetch(x, i)
+                  dbMultiFetch(x, i)
           })
 
 setMethod("dbExists", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-              dbkeys <- dbList(db)
-              key %in% dbkeys
+                  dbkeys <- dbList(db)
+                  key %in% dbkeys
           })
 
 setMethod("dbList", "filehashDB1",
           function(db, ...) {
+<<<<<<< HEAD:R/filehash-DB1.R
               filecon <- file(db@datafile, "rb")
               on.exit(close(filecon))
               
@@ -370,60 +412,80 @@ setMethod("dbList", "filehashDB1",
                   use <- !sapply(map.list, is.null)
                   names(map.list[use])
               }
+=======
+                  filecon <- file(db@datafile, "rb")
+                  on.exit(close(filecon))
+
+                  checkMap(db, filecon)
+                  map <- getMap(db)
+
+                  if(length(map) == 0)
+                          character(0)
+                  else
+                          names(as.list(map, all.names = TRUE))
+>>>>>>> master:R/filehash-DB1.R
           })
 
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-              filecon <- file(db@datafile, "ab")
-              on.exit(close(filecon))
+                  filecon <- file(db@datafile, "ab")
+                  on.exit(close(filecon))
 
-              writeNullKeyValue(filecon, key)
+                  writeNullKeyValue(filecon, key)
           })
 
 setMethod("dbUnlink", "filehashDB1",
           function(db, ...) {
-              file.remove(db@datafile)
+                  file.remove(db@datafile)
           })
 
 setMethod("dbReorganize", "filehashDB1",
           function(db, ...) {
-              datafile <- db@datafile
+                  datafile <- db@datafile
 
-              ## Find a temporary file name
-              tempdata <- paste(datafile, "Tmp", sep = "")
-              i <- 0
-              while(file.exists(tempdata)) {
-                  i <- i + 1
-                  tempdata <- paste(datafile, "Tmp", i, sep = "")
-              }
-              if(!dbCreate(tempdata, type = "DB1")) {
-                  warning("could not create temporary database")
-                  return(FALSE)
-              }
-              on.exit(file.remove(tempdata))
-              
-              tempdb <- dbInit(tempdata, type = "DB1")
-              keys <- dbList(db)
+                  ## Find a temporary file name
+                  tempdata <- paste(datafile, "Tmp", sep = "")
+                  i <- 0
+                  while(file.exists(tempdata)) {
+                          i <- i + 1
+                          tempdata <- paste(datafile, "Tmp", i, sep = "")
+                  }
+                  if(!dbCreate(tempdata, type = "DB1")) {
+                          warning("could not create temporary database")
+                          return(FALSE)
+                  }
+                  on.exit(file.remove(tempdata))
 
-              ## Copy all keys to temporary database
-              message("reorganizing database contents...")
-              for(key in keys) 
-                  dbInsert(tempdb, key, dbFetch(db, key))
+                  tempdb <- dbInit(tempdata, type = "DB1")
+                  keys <- dbList(db)
 
-              ## dbDisconnect(tempdb)
-              ## dbDisconnect(db)
-              status <- file.rename(tempdata, datafile)
-              
-              if(!isTRUE(status)) {
+                  ## Copy all keys to temporary database
+                  nkeys <- length(keys)
+                  cat("Reorganizing database: ")
+
+                  for(i in seq_along(keys)) {
+                          key <- keys[i]
+                          msg <- sprintf("%d%% (%d/%d)", round (100 * i / nkeys),
+                                         i, nkeys)
+                          cat(msg)
+
+                          dbInsert(tempdb, key, dbFetch(db, key))
+
+                          back <- paste(rep("\b", nchar(msg)), collapse = "")
+                          cat(back)
+                  }
+                  cat("\n")
+                  status <- file.rename(tempdata, datafile)
+
+                  if(!isTRUE(status)) {
+                          on.exit()
+                          warning("temporary database could not be renamed and is left in ",
+                                  tempdata)
+                          return(FALSE)
+                  }
                   on.exit()
-                  warning("temporary database could not be renamed and is left in ",
-                          tempdata)
-                  return(FALSE)
-              }
-              ## message("original database has been disconnected; ",
-              ##         "reload with 'dbInit'")
-              message("database reorganized; reload database with 'dbInit'")
-              TRUE
+                  message("Finished; reload database with 'dbInit'")
+                  TRUE
           })
 
 
@@ -431,23 +493,23 @@ setMethod("dbReorganize", "filehashDB1",
 ## Test system's ftell()
 
 hasWorkingFtell <- function() {
-    tfile <- tempfile()
-    con <- file(tfile, "wb")
+        tfile <- tempfile()
+        con <- file(tfile, "wb")
 
-    tryCatch({
-        bytes <- raw(10)
-        begin <- seek(con)
+        tryCatch({
+                bytes <- raw(10)
+                begin <- seek(con)
 
-        if(begin != 0)
-            return(FALSE)
-        writeBin(bytes, con)
-        end <- seek(con)
-        offset <- end - begin
-        isTRUE(offset == 10)
-    }, finally = {
-        close(con)
-        unlink(tfile)
-    })
+                if(begin != 0)
+                        return(FALSE)
+                writeBin(bytes, con)
+                end <- seek(con)
+                offset <- end - begin
+                isTRUE(offset == 10)
+        }, finally = {
+                close(con)
+                unlink(tfile)
+        })
 }
 
 ######################################################################
