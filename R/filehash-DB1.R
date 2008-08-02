@@ -213,38 +213,6 @@ writeKey <- function(con, key) {
 }
 
 writeKeyValue <- function(con, key, value) {
-<<<<<<< HEAD:R/filehash-DB1.R
-    writestart <- findEndPos(con)
-
-    handler <- function(cond) {
-        ## Rewind the file back to where writing began and truncate at
-        ## that position; this is probably a bad idea for files > 2GB
-        seek(con, writestart, "start", "write")
-        truncate(con)
-        cond
-    }
-    repeat {
-        if(!isLocked(con)) {
-            createLockFile(con)
-
-            tryCatch({
-                writeKey(con, key)
-        
-                ## Serialize data to raw bytes
-                byteData <- serialize(value, NULL)
-                
-                ## Write out length of data
-                len <- as.integer(length(byteData))
-                serialize(len, con)
-                
-                ## Write out data
-                writeBin(byteData, con)
-            }, interrupt = handler, error = handler, finally = {
-                flush(con)
-                deleteLockFile(con)
-            })
-            break
-=======
         writestart <- findEndPos(con)
 
         handler <- function(cond) {
@@ -277,7 +245,6 @@ writeKeyValue <- function(con, key, value) {
                         })
                         break
                 }
->>>>>>> master:R/filehash-DB1.R
         }
 }
 
@@ -398,21 +365,6 @@ setMethod("dbExists", signature(db = "filehashDB1", key = "character"),
 
 setMethod("dbList", "filehashDB1",
           function(db, ...) {
-<<<<<<< HEAD:R/filehash-DB1.R
-              filecon <- file(db@datafile, "rb")
-              on.exit(close(filecon))
-              
-              checkMap(db, filecon)
-              map <- getMap(db)
-              
-              if(length(map) == 0)
-                  character(0)
-              else {
-                  map.list <- as.list(map, all.names = TRUE)
-                  use <- !sapply(map.list, is.null)
-                  names(map.list[use])
-              }
-=======
                   filecon <- file(db@datafile, "rb")
                   on.exit(close(filecon))
 
@@ -423,7 +375,6 @@ setMethod("dbList", "filehashDB1",
                           character(0)
                   else
                           names(as.list(map, all.names = TRUE))
->>>>>>> master:R/filehash-DB1.R
           })
 
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
