@@ -212,7 +212,7 @@ deleteLockFile <- function(con) {
 
 isLocked <- function(con) {
         lockfile <- lockFileName(con)
-        isTRUE( file.exists(lockfile) )
+        file.exists(lockfile)
 }
 
 ######################################################################
