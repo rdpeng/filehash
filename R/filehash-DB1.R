@@ -108,28 +108,6 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
         .Call("read_key_map", filename, map, filesize, pos)
 }
 
-convertDB1 <- function(old, new) {
-        dbCreate(new, "DB1")
-        newdb <- dbInit(new, "DB1")
-
-        con <- file(old, "rb")
-        on.exit(close(con))
-
-        endpos <- findEndPos(con)
-        pos <- 0
-
-        while(pos < endpos) {
-                keylen <- readBin(con, "numeric", endian = "little")
-                key <- rawToChar(readBin(con, "raw", keylen))
-                datalen <- readBin(con, "numeric", endian = "little")
-                value <- unserialize(con)
-
-                dbInsert(newdb, key, value)
-                pos <- seek(con)
-        }
-        newdb
-}
-
 readSingleKey <- function(con, map, key) {
         start <- map[[key]]
 
