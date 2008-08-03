@@ -190,7 +190,7 @@ writeKeyValue <- function(con, key, value) {
 
 lockFileName <- function(con) {
         ## Use 3 underscores for lock file
-        paste(summary(con)$description, "LOCK", sep = "___")
+        sprintf("%s___LOCK", summary(con)$description)
 }
 
 createLockFile <- function(con) {
