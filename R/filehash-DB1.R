@@ -168,8 +168,6 @@ writeKeyValue <- function(con, key, value) {
                 truncate(con)
                 cond
         }
-        while(isLocked(con))
-                next
         if(!createLockFile(con))
                 stop("cannot create lock file")
         tryCatch({
@@ -197,14 +195,13 @@ lockFileName <- function(con) {
 
 createLockFile <- function(con) {
         lockfile <- lockFileName(con)
-        file.create(lockfile)
+        status <- .Call("lock_file", lockfile)
+        isTRUE(status >= 0)
 }
 
 deleteLockFile <- function(con) {
-        if(isLocked(con)) {
-                lockfile <- lockFileName(con)
-                file.remove(lockfile)
-        }
+        lockfile <- lockFileName(con)
+        file.remove(lockfile)
 }
 
 isLocked <- function(con) {
