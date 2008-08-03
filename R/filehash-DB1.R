@@ -310,54 +310,55 @@ setMethod("dbUnlink", "filehashDB1",
                   file.remove(db@datafile)
           })
 
-setMethod("dbReorganize", "filehashDB1",
-          function(db, ...) {
-                  datafile <- db@datafile
+reorganizeDB <- function(db, ...) {
+        datafile <- db@datafile
 
-                  ## Find a temporary file name
-                  tempdata <- paste(datafile, "Tmp", sep = "")
-                  i <- 0
-                  while(file.exists(tempdata)) {
-                          i <- i + 1
-                          tempdata <- paste(datafile, "Tmp", i, sep = "")
-                  }
-                  if(!dbCreate(tempdata, type = "DB1")) {
-                          warning("could not create temporary database")
-                          return(FALSE)
-                  }
-                  on.exit(file.remove(tempdata))
+        ## Find a temporary file name
+        tempdata <- paste(datafile, "Tmp", sep = "")
+        i <- 0
+        while(file.exists(tempdata)) {
+                i <- i + 1
+                tempdata <- paste(datafile, "Tmp", i, sep = "")
+        }
+        if(!dbCreate(tempdata, type = "DB1")) {
+                warning("could not create temporary database")
+                return(FALSE)
+        }
+        on.exit(file.remove(tempdata))
 
-                  tempdb <- dbInit(tempdata, type = "DB1")
-                  keys <- dbList(db)
+        tempdb <- dbInit(tempdata, type = "DB1")
+        keys <- dbList(db)
 
-                  ## Copy all keys to temporary database
-                  nkeys <- length(keys)
-                  cat("Reorganizing database: ")
+        ## Copy all keys to temporary database
+        nkeys <- length(keys)
+        cat("Reorganizing database: ")
 
-                  for(i in seq_along(keys)) {
-                          key <- keys[i]
-                          msg <- sprintf("%d%% (%d/%d)", round (100 * i / nkeys),
-                                         i, nkeys)
-                          cat(msg)
+        for(i in seq_along(keys)) {
+                key <- keys[i]
+                msg <- sprintf("%d%% (%d/%d)", round (100 * i / nkeys),
+                               i, nkeys)
+                cat(msg)
 
-                          dbInsert(tempdb, key, dbFetch(db, key))
+                dbInsert(tempdb, key, dbFetch(db, key))
 
-                          back <- paste(rep("\b", nchar(msg)), collapse = "")
-                          cat(back)
-                  }
-                  cat("\n")
-                  status <- file.rename(tempdata, datafile)
+                back <- paste(rep("\b", nchar(msg)), collapse = "")
+                cat(back)
+        }
+        cat("\n")
+        status <- file.rename(tempdata, datafile)
 
-                  if(!isTRUE(status)) {
-                          on.exit()
-                          warning("temporary database could not be renamed and is left in ",
-                                  tempdata)
-                          return(FALSE)
-                  }
-                  on.exit()
-                  message("Finished; reload database with 'dbInit'")
-                  TRUE
-          })
+        if(!isTRUE(status)) {
+                on.exit()
+                warning("temporary database could not be renamed and is left in ",
+                        tempdata)
+                return(FALSE)
+        }
+        on.exit()
+        message("Finished; reload database with 'dbInit'")
+        TRUE
+}
+
+setMethod("dbReorganize", "filehashDB1", reorganizeDB)
 
 
 ################################################################################
