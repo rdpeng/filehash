@@ -134,27 +134,17 @@ writeNullKeyValue <- function(con, key) {
                 truncate(con)
                 cond
         }
-        repeat {
-                if(!isLocked(con)) {
-                        createLockFile(con)
+        if(!createLockFile(con))
+                stop("cannot create lock file")
+        tryCatch({
+                serialize(key, con)
 
-                        tryCatch({
-                                writeKey(con, key)
-
-                                len <- as.integer(-1)
-                                serialize(len, con)
-                        }, interrupt = handler, error = handler, finally = {
-                                flush(con)
-                                deleteLockFile(con)
-                        })
-                        break
-                }
-        }
-}
-
-writeKey <- function(con, key) {
-        ## Write out key
-        serialize(key, con)
+                len <- as.integer(-1)
+                serialize(len, con)
+        }, interrupt = handler, error = handler, finally = {
+                flush(con)
+                deleteLockFile(con)
+        })
 }
 
 writeKeyValue <- function(con, key, value) {
@@ -171,7 +161,7 @@ writeKeyValue <- function(con, key, value) {
         if(!createLockFile(con))
                 stop("cannot create lock file")
         tryCatch({
-                writeKey(con, key)
+                serialize(key, con)
 
                 ## Serialize data to raw bytes
                 byteData <- serialize(value, NULL)
@@ -202,11 +192,6 @@ createLockFile <- function(con) {
 deleteLockFile <- function(con) {
         lockfile <- lockFileName(con)
         file.remove(lockfile)
-}
-
-isLocked <- function(con) {
-        lockfile <- lockFileName(con)
-        file.exists(lockfile)
 }
 
 ######################################################################
