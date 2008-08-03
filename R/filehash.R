@@ -96,7 +96,6 @@ setMethod("dbCreate", "ANY",
                   type <- filehashOption()$defaultType
 
               dbStartup(db, type, "create")
-              TRUE
           })
           
 setGeneric("dbInit", function(db, ...) standardGeneric("dbInit"))
