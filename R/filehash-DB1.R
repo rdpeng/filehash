@@ -86,11 +86,6 @@ initializeDB1 <- function(dbName) {
 }
 
 
-findEndPos <- function(con) {
-        seek(con, 0, "end")
-        seek(con)
-}
-
 readKeyMap <- function(con, map = NULL, pos = 0) {
         if(is.null(map)) {
                 ## using 'hash = TRUE' is critical because it can have a major
@@ -124,8 +119,14 @@ readKeys <- function(con, map, keys) {
         r
 }
 
+gotoEndPos <- function(con) {
+        ## Move connection to the end
+        seek(con, 0, "end")
+        seek(con)
+}
+
 writeNullKeyValue <- function(con, key) {
-        writestart <- findEndPos(con)
+        writestart <- gotoEndPos(con)
 
         handler <- function(cond) {
                 ## Rewind the file back to where writing began and truncate at
@@ -148,7 +149,7 @@ writeNullKeyValue <- function(con, key) {
 }
 
 writeKeyValue <- function(con, key, value) {
-        writestart <- findEndPos(con)
+        writestart <- gotoEndPos(con)
 
         handler <- function(cond) {
                 ## Rewind the file back to where writing began and
@@ -163,14 +164,10 @@ writeKeyValue <- function(con, key, value) {
         tryCatch({
                 serialize(key, con)
 
-                ## Serialize data to raw bytes
                 byteData <- serialize(value, NULL)
-
-                ## Write out length of data
                 len <- length(byteData)
                 serialize(len, con)
 
-                ## Write out data
                 writeBin(byteData, con)
         }, interrupt = handler, error = handler, finally = {
                 flush(con)
@@ -184,8 +181,7 @@ lockFileName <- function(con) {
 }
 
 createLockFile <- function(con) {
-        lockfile <- lockFileName(con)
-        status <- .Call("lock_file", lockfile)
+        status <- .Call("lock_file", lockFileName(con))
         isTRUE(status >= 0)
 }
 
@@ -197,7 +193,7 @@ deleteLockFile <- function(con) {
 ######################################################################
 ## Internal utilities
 
-filesize <- findEndPos
+filesize <- gotoEndPos
 
 setGeneric("checkMap", function(db, ...) standardGeneric("checkMap"))
 
