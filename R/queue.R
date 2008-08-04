@@ -31,8 +31,10 @@ putQ <- function(dbl, vals) {
         for(i in seq_along(vals)) {
                 obj <- list(value = vals[[i]], nextkey = nextkey)
                 key <- sha1(obj)
+
                 dbInsert(dbl$qdb, key, obj)
                 writeLines(key, dbl$meta)
+
                 nextkey <- key
         }
         writeLines(nextkey, dbl$meta)
@@ -51,10 +53,10 @@ popQ <- function(dbl) {
 
         if(!length(h))
                 return(NULL)
-        with(dbl, {
-                obj <- dbFetch(qdb, h)
-                writeLines(obj$nextkey, meta)
-                dbDelete(qdb, h)
-                obj$value
-        })
+        obj <- dbFetch(dbl$qdb, h)
+
+        writeLines(obj$nextkey, meta)
+        dbDelete(dbl$qdb, h)
+
+        obj$value
 }
