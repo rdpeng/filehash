@@ -32,8 +32,9 @@ putQ <- function(dbl, vals) {
                 obj <- list(value = vals[[i]], nextkey = nextkey)
                 key <- sha1(obj)
 
-                dbInsert(dbl$qdb, key, obj)
+                ## These two are critical and need to be protected
                 writeLines(key, dbl$meta)
+                dbInsert(dbl$qdb, key, obj)
 
                 nextkey <- key
         }
@@ -55,6 +56,7 @@ popQ <- function(dbl) {
                 return(NULL)
         obj <- dbFetch(dbl$qdb, h)
 
+        ## These two are critical and need to be protected
         writeLines(obj$nextkey, meta)
         dbDelete(dbl$qdb, h)
 
