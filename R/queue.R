@@ -2,7 +2,7 @@ createQ <- function(filename) {
         dbCreate(filename, "DB1")
         qdb <- dbInit(filename, "DB1")
 
-        metaname <- paste(filename, "q", sep = ".")
+        metaname <- paste(filename, "head", sep = ".")
         file.create(metaname)
 
         list(qdb = qdb, meta = metaname, name = filename)
@@ -10,7 +10,7 @@ createQ <- function(filename) {
 
 initQ <- function(filename) {
         list(qdb = dbInit(filename, "DB1"),
-             meta = paste(filename, "q", sep = "."),
+             meta = paste(filename, "head", sep = "."),
              name = filename)
 }
 
