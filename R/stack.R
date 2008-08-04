@@ -41,6 +41,15 @@ putS <- function(dbl, vals) {
         writeLines(nextkey, dbl$meta)
 }
 
+headS <- function(dbl) {
+        if(!createLockFile(lockFileS(dbl)))
+                stop("cannot create lock file")
+        on.exit(deleteLockFile(lockFileS(dbl)))
+        h <- headSkey(dbl)
+        obj <- dbFetch(dbl$sdb, h)
+        obj$value
+}
+
 headSkey <- function(dbl) {
         with(dbl, readLines(meta))
 }
