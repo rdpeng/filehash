@@ -50,3 +50,6 @@ export(
        "dumpImage",
        "dumpList"
        )
+
+## Queue stuff
+export("createQ", "initQ", "putQ", "popQ", "headQkey")
