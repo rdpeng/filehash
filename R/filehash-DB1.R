@@ -134,7 +134,7 @@ writeNullKeyValue <- function(con, key) {
                 truncate(con)
                 cond
         }
-        if(!createLockFile(con))
+        if(!createLockFile(lockFileName(con)))
                 stop("cannot create lock file")
         tryCatch({
                 serialize(key, con)
@@ -143,7 +143,7 @@ writeNullKeyValue <- function(con, key) {
                 serialize(len, con)
         }, interrupt = handler, error = handler, finally = {
                 flush(con)
-                deleteLockFile(con)
+                deleteLockFile(lockFileName(con))
         })
 }
 
@@ -158,7 +158,7 @@ writeKeyValue <- function(con, key, value) {
                 truncate(con)
                 cond
         }
-        if(!createLockFile(con))
+        if(!createLockFile(lockFileName(con)))
                 stop("cannot create lock file")
         tryCatch({
                 serialize(key, con)
@@ -170,7 +170,7 @@ writeKeyValue <- function(con, key, value) {
                 writeBin(byteData, con)
         }, interrupt = handler, error = handler, finally = {
                 flush(con)
-                deleteLockFile(con)
+                deleteLockFile(lockFileName(con))
         })
 }
 
@@ -179,14 +179,13 @@ lockFileName <- function(con) {
         sprintf("%s___LOCK", summary(con)$description)
 }
 
-createLockFile <- function(con) {
-        status <- .Call("lock_file", lockFileName(con))
+createLockFile <- function(name) {
+        status <- .Call("lock_file", name)
         isTRUE(status >= 0)
 }
 
-deleteLockFile <- function(con) {
-        lockfile <- lockFileName(con)
-        file.remove(lockfile)
+deleteLockFile <- function(name) {
+        file.remove(name)
 }
 
 ######################################################################
