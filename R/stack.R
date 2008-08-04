@@ -46,6 +46,9 @@ headS <- function(dbl) {
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFileS(dbl)))
         h <- headSkey(dbl)
+
+        if(!length(h))
+                return(NULL)
         obj <- dbFetch(dbl$sdb, h)
         obj$value
 }
