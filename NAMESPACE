@@ -51,5 +51,5 @@ export(
        "dumpList"
        )
 
-## Queue stuff
-export("createQ", "initQ", "putQ", "popQ", "headQkey")
+## Stack stuff
+export("createS", "initS", "putS", "popS", "headSkey")

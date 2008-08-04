@@ -1,27 +1,27 @@
-createQ <- function(filename) {
+createS <- function(filename) {
         dbCreate(filename, "DB1")
-        qdb <- dbInit(filename, "DB1")
+        sdb <- dbInit(filename, "DB1")
 
         metaname <- paste(filename, "head", sep = ".")
         file.create(metaname)
 
-        list(qdb = qdb, meta = metaname, name = filename)
+        list(sdb = sdb, meta = metaname, name = filename)
 }
 
-initQ <- function(filename) {
-        list(qdb = dbInit(filename, "DB1"),
+initS <- function(filename) {
+        list(sdb = dbInit(filename, "DB1"),
              meta = paste(filename, "head", sep = "."),
              name = filename)
 }
 
-lockFileQ <- function(dbl) {
-        paste(dbl$name, "qlock", sep = ".")
+lockFileS <- function(dbl) {
+        paste(dbl$name, "slock", sep = ".")
 }
 
-putQ <- function(dbl, vals) {
-        if(!createLockFile(lockFileQ(dbl)))
+putS <- function(dbl, vals) {
+        if(!createLockFile(lockFileS(dbl)))
                 stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileQ(dbl)))
+        on.exit(deleteLockFile(lockFileS(dbl)))
 
         if(!is.list(vals))
                 vals <- as.list(vals)
@@ -34,31 +34,31 @@ putQ <- function(dbl, vals) {
 
                 ## These two are critical and need to be protected
                 writeLines(key, dbl$meta)
-                dbInsert(dbl$qdb, key, obj)
+                dbInsert(dbl$sdb, key, obj)
 
                 nextkey <- key
         }
         writeLines(nextkey, dbl$meta)
 }
 
-headQkey <- function(dbl) {
+headSkey <- function(dbl) {
         with(dbl, readLines(meta))
 }
 
-popQ <- function(dbl) {
-        if(!createLockFile(lockFileQ(dbl)))
+popS <- function(dbl) {
+        if(!createLockFile(lockFileS(dbl)))
                 stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileQ(dbl)))
+        on.exit(deleteLockFile(lockFileS(dbl)))
 
-        h <- headQkey(dbl)
+        h <- headSkey(dbl)
 
         if(!length(h))
                 return(NULL)
-        obj <- dbFetch(dbl$qdb, h)
+        obj <- dbFetch(dbl$sdb, h)
 
         ## These two are critical and need to be protected
-        writeLines(obj$nextkey, meta)
-        dbDelete(dbl$qdb, h)
+        writeLines(obj$nextkey, dbl$meta)
+        dbDelete(dbl$sdb, h)
 
         obj$value
 }
