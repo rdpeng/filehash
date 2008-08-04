@@ -1,42 +1,34 @@
 createQ <- function(filename) {
         dbCreate(filename, "DB1")
-        metaname <- paste(filename, "q", sep = ".")
-        dbCreate(metaname, "DB1")
         qdb <- dbInit(filename, "DB1")
-        meta <- dbInit(metaname, "DB1")
-        dbInsert(meta, "head", NULL)
-        list(qdb = qdb, meta = meta, name = filename)
+
+        metaname <- paste(filename, "q", sep = ".")
+        file.create(metaname)
+
+        list(qdb = qdb, meta = metaname, name = filename)
 }
 
 initQ <- function(filename) {
         list(qdb = dbInit(filename, "DB1"),
-             meta = dbInit(paste(filename, "q", sep = ".")),
+             meta = paste(filename, "q", sep = "."),
              name = filename)
 }
 
-createQlock <- function(dbl) {
-        lockfile <- paste(dbl$name, "qlock", sep = ".")        
-        status <- .Call("lock_file", lockfile)
-        isTRUE(status >= 0)
-}
-
-deleteQlock <- function(dbl) {
-        lockfile <- paste(dbl$name, "qlock", sep = ".")
-        file.remove(lockfile)
+lockFileQ <- function(dbl) {
+        paste(dbl$name, "qlock", sep = ".")
 }
 
 putQ <- function(dbl, vals) {
-        if(!createQlock(dbl))
+        if(!createLockFile(lockFileQ(dbl)))
                 stop("cannot create lock file")
-        on.exit(deleteQlock(dbl))
+        on.exit(deleteLockFile(lockFileQ(dbl)))
 
         len <- length(vals)
         nextkey <- dbFetch(dbl$meta, "head")
 
         for(i in seq_along(vals)) {
                 key <- sha1(vals[i])
-                obj <- list(value = vals[i],
-                            nextkey = nextkey)
+                obj <- list(value = vals[i], nextkey = nextkey)
                 dbInsert(dbl$qdb, key, obj)
                 dbInsert(dbl$meta, "head", key)
                 nextkey <- key
@@ -49,9 +41,9 @@ headQkey <- function(dbl) {
 }
 
 popQ <- function(dbl) {
-        if(!createQlock(dbl))
+        if(!createLockFile(lockFileQ(dbl)))
                 stop("cannot create lock file")
-        on.exit(deleteQlock(dbl))
+        on.exit(deleteLockFile(lockFileQ(dbl)))
 
         h <- headQkey(dbl)
 
