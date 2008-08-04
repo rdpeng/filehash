@@ -23,21 +23,23 @@ putQ <- function(dbl, vals) {
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFileQ(dbl)))
 
+        if(!is.list(vals))
+                vals <- as.list(vals)
         len <- length(vals)
-        nextkey <- dbFetch(dbl$meta, "head")
+        nextkey <- readLines(dbl$meta)
 
         for(i in seq_along(vals)) {
-                key <- sha1(vals[i])
-                obj <- list(value = vals[i], nextkey = nextkey)
+                obj <- list(value = vals[[i]], nextkey = nextkey)
+                key <- sha1(obj)
                 dbInsert(dbl$qdb, key, obj)
-                dbInsert(dbl$meta, "head", key)
+                writeLines(key, dbl$meta)
                 nextkey <- key
         }
-        dbInsert(dbl$meta, "head", nextkey)
+        writeLines(nextkey, dbl$meta)
 }
 
 headQkey <- function(dbl) {
-        with(dbl, dbFetch(meta, "head"))
+        with(dbl, readLines(meta))
 }
 
 popQ <- function(dbl) {
@@ -47,11 +49,11 @@ popQ <- function(dbl) {
 
         h <- headQkey(dbl)
 
-        if(is.null(h))
+        if(!length(h))
                 return(NULL)
         with(dbl, {
                 obj <- dbFetch(qdb, h)
-                dbInsert(meta, "head", obj$nextkey)
+                writeLines(obj$nextkey, meta)
                 dbDelete(qdb, h)
                 obj$value
         })
