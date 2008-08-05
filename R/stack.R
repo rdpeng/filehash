@@ -38,6 +38,12 @@ pushS <- function(db, vals) {
         }
 }
 
+isEmptyS <- function(db) {
+        h <- dbFetch(db$stack, "top")
+        is.null(h)
+}
+
+
 topS <- function(db) {
         if(!createLockFile(lockFileS(db)))
                 stop("cannot create lock file")

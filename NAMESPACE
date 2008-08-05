@@ -52,4 +52,4 @@ export(
        )
 
 ## Stack stuff
-export("headS", "createS", "initS", "putS", "popS", "headSkey")
+export("isEmptyS", "topS", "createS", "initS", "putS", "popS")
