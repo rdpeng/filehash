@@ -22,10 +22,10 @@ pushS <- function(db, val) {
 
         obj <- list(value = vals[[i]],
                     nextkey = dbFetch(db$stack, "top"))
-        key <- sha1(obj)
+        topkey <- sha1(obj)
 
-        dbInsert(db$stack, key, obj)
-        dbInsert(db$stack, "top", key)
+        dbInsert(db$stack, topkey, obj)
+        dbInsert(db$stack, "top", topkey)
 }
 
 mpushS <- function(db, vals) {
@@ -35,17 +35,15 @@ mpushS <- function(db, vals) {
 
         if(!is.list(vals))
                 vals <- as.list(vals)
-        nextkey <- dbFetch(db$stack, "top")
+        topkey <- dbFetch(db$stack, "top")
 
         for(i in seq_along(vals)) {
                 obj <- list(value = vals[[i]],
-                            nextkey = nextkey)
-                key <- sha1(obj)
+                            nextkey = topkey)
+                topkey <- sha1(obj)
 
-                dbInsert(db$stack, key, obj)
-                dbInsert(db$stack, "top", key)
-
-                nextkey <- key
+                dbInsert(db$stack, topkey, obj)
+                dbInsert(db$stack, "top", topkey)
         }
 }
 
