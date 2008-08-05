@@ -1,76 +1,73 @@
 createS <- function(filename) {
         dbCreate(filename, "DB1")
-        sdb <- dbInit(filename, "DB1")
+        stack <- dbInit(filename, "DB1")
+        dbInsert(stack, "top", NULL)
 
-        metaname <- paste(filename, "head", sep = ".")
-        file.create(metaname)
-
-        list(sdb = sdb, meta = metaname, name = filename)
+        list(stack = stack, name = filename)
 }
 
 initS <- function(filename) {
-        list(sdb = dbInit(filename, "DB1"),
-             meta = paste(filename, "head", sep = "."),
+        list(stack = dbInit(filename, "DB1"),
              name = filename)
 }
 
-lockFileS <- function(dbl) {
-        paste(dbl$name, "slock", sep = ".")
+lockFileS <- function(db) {
+        paste(db$name, "slock", sep = ".")
 }
 
-putS <- function(dbl, vals) {
-        if(!createLockFile(lockFileS(dbl)))
+pushS <- function(db, vals) {
+        if(!createLockFile(lockFileS(db)))
                 stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileS(dbl)))
+        on.exit(deleteLockFile(lockFileS(db)))
 
         if(!is.list(vals))
                 vals <- as.list(vals)
         len <- length(vals)
-        nextkey <- readLines(dbl$meta)
+        nextkey <- dbFetch(db$stack, "top")
 
         for(i in seq_along(vals)) {
-                obj <- list(value = vals[[i]], nextkey = nextkey)
+                obj <- list(value = vals[[i]],
+                            nextkey = nextkey)
                 key <- sha1(obj)
 
                 ## These two are critical and need to be protected
-                writeLines(key, dbl$meta)
-                dbInsert(dbl$sdb, key, obj)
+                dbInsert(db$stack, key, obj)
+                dbInsert(db$stack, "top", key)
 
                 nextkey <- key
         }
-        writeLines(nextkey, dbl$meta)
 }
 
-headS <- function(dbl) {
-        if(!createLockFile(lockFileS(dbl)))
+topS <- function(db) {
+        if(!createLockFile(lockFileS(db)))
                 stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileS(dbl)))
-        h <- headSkey(dbl)
+        tryCatch({
+                h <- dbFetch(db$stack, "top")
 
-        if(!length(h))
-                return(NULL)
-        obj <- dbFetch(dbl$sdb, h)
+                if(!is.null(h))
+                        return(NULL)
+                obj <- dbFetch(db$stack, h)
+        }, finally = {
+                deleteLockFile(lockFileS(db))
+        })
         obj$value
 }
 
-headSkey <- function(dbl) {
-        with(dbl, readLines(meta))
-}
-
-popS <- function(dbl) {
-        if(!createLockFile(lockFileS(dbl)))
+popS <- function(db) {
+        if(!createLockFile(lockFileS(db)))
                 stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileS(dbl)))
+        tryCatch({
+                h <- dbFetch(db$stack, "top")
 
-        h <- headSkey(dbl)
+                if(!length(h))
+                        return(NULL)
+                obj <- dbFetch(db$stack, h)
 
-        if(!length(h))
-                return(NULL)
-        obj <- dbFetch(dbl$sdb, h)
-
-        ## These two are critical and need to be protected
-        writeLines(obj$nextkey, dbl$meta)
-        dbDelete(dbl$sdb, h)
-
+                ## These two are critical and need to be protected
+                dbInsert(db$stack, "top", obj$nextkey)
+                dbDelete(db$stack, h)
+        }, finally = {
+                deleteLockFile(lockFileS(db))
+        })
         obj$value
 }
