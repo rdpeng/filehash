@@ -36,7 +36,7 @@ isEmptyQ <- function(db) {
 }
 
 headQ <- function(db) {
-        if(!createLockFile(lockFileS(db)))
+        if(!createLockFile(lockFileQ(db)))
                 stop("cannot create lock file")
         tryCatch({
                 h <- dbFetch(db$queue, "head")
@@ -51,7 +51,7 @@ headQ <- function(db) {
 }
 
 popQ <- function(db) {
-        if(!createLockFile(lockFileS(db)))
+        if(!createLockFile(lockFileQ(db)))
                 stop("cannot create lock file")
         tryCatch({
                 h <- dbFetch(db$queue, "head")
