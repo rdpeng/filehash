@@ -25,10 +25,20 @@ pushQ <- function(db, val) {
                      nextkey = NULL)
         key <- sha1(node)
         dbInsert(db$queue, key, node)
-        dbInsert(db$queue, "tail", sha1(node))
 
-        if(is.null(dbFetch(db$queue, "head")))
+        h <- dbFetch(db$queue, "head")
+
+        if(is.null(h)) {
                 dbInsert(db$queue, "head", key)
+                dbInsert(db$queue, "tail", key)
+        }
+        else {
+                tl <- dbFetch(db$queue, "tail")
+                oldtail <- dbFetch(db$queue, tl)
+                oldtail$nextkey <- key
+                dbInsert(db$queue, tl, oldtail)
+                dbInsert(db$queue, "tail", key)
+        }
 }
 
 isEmptyQ <- function(db) {
