@@ -20,11 +20,11 @@ pushS <- function(db, val) {
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFileS(db)))
 
-        obj <- list(value = vals[[i]],
+        node <- list(value = val,
                     nextkey = dbFetch(db$stack, "top"))
-        topkey <- sha1(obj)
+        topkey <- sha1(node)
 
-        dbInsert(db$stack, topkey, obj)
+        dbInsert(db$stack, topkey, node)
         dbInsert(db$stack, "top", topkey)
 }
 
@@ -38,11 +38,11 @@ mpushS <- function(db, vals) {
         topkey <- dbFetch(db$stack, "top")
 
         for(i in seq_along(vals)) {
-                obj <- list(value = vals[[i]],
+                node <- list(value = vals[[i]],
                             nextkey = topkey)
-                topkey <- sha1(obj)
+                topkey <- sha1(node)
 
-                dbInsert(db$stack, topkey, obj)
+                dbInsert(db$stack, topkey, node)
                 dbInsert(db$stack, "top", topkey)
         }
 }
@@ -61,11 +61,11 @@ topS <- function(db) {
 
                 if(is.null(h))
                         return(NULL)
-                obj <- dbFetch(db$stack, h)
+                node <- dbFetch(db$stack, h)
         }, finally = {
                 deleteLockFile(lockFileS(db))
         })
-        obj$value
+        node$value
 }
 
 popS <- function(db) {
@@ -76,12 +76,12 @@ popS <- function(db) {
 
                 if(is.null(h))
                         return(NULL)
-                obj <- dbFetch(db$stack, h)
+                node <- dbFetch(db$stack, h)
 
-                dbInsert(db$stack, "top", obj$nextkey)
+                dbInsert(db$stack, "top", node$nextkey)
                 dbDelete(db$stack, h)
         }, finally = {
                 deleteLockFile(lockFileS(db))
         })
-        obj$value
+        node$value
 }
