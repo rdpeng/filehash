@@ -15,14 +15,26 @@ lockFileS <- function(db) {
         paste(db$name, "slock", sep = ".")
 }
 
-pushS <- function(db, vals) {
+pushS <- function(db, val) {
+        if(!createLockFile(lockFileS(db)))
+                stop("cannot create lock file")
+        on.exit(deleteLockFile(lockFileS(db)))
+
+        obj <- list(value = vals[[i]],
+                    nextkey = dbFetch(db$stack, "top"))
+        key <- sha1(obj)
+
+        dbInsert(db$stack, key, obj)
+        dbInsert(db$stack, "top", key)
+}
+
+mpushS <- function(db, vals) {
         if(!createLockFile(lockFileS(db)))
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFileS(db)))
 
         if(!is.list(vals))
                 vals <- as.list(vals)
-        len <- length(vals)
         nextkey <- dbFetch(db$stack, "top")
 
         for(i in seq_along(vals)) {
@@ -30,7 +42,6 @@ pushS <- function(db, vals) {
                             nextkey = nextkey)
                 key <- sha1(obj)
 
-                ## These two are critical and need to be protected
                 dbInsert(db$stack, key, obj)
                 dbInsert(db$stack, "top", key)
 
@@ -69,7 +80,6 @@ popS <- function(db) {
                         return(NULL)
                 obj <- dbFetch(db$stack, h)
 
-                ## These two are critical and need to be protected
                 dbInsert(db$stack, "top", obj$nextkey)
                 dbDelete(db$stack, h)
         }, finally = {
