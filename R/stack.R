@@ -50,7 +50,7 @@ topS <- function(db) {
         tryCatch({
                 h <- dbFetch(db$stack, "top")
 
-                if(!is.null(h))
+                if(is.null(h))
                         return(NULL)
                 obj <- dbFetch(db$stack, h)
         }, finally = {
@@ -65,7 +65,7 @@ popS <- function(db) {
         tryCatch({
                 h <- dbFetch(db$stack, "top")
 
-                if(!length(h))
+                if(is.null(h))
                         return(NULL)
                 obj <- dbFetch(db$stack, h)
 
