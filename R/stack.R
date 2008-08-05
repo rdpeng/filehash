@@ -77,11 +77,10 @@ popS <- function(db) {
                 if(is.null(h))
                         return(NULL)
                 node <- dbFetch(db$stack, h)
-
                 dbInsert(db$stack, "top", node$nextkey)
-                dbDelete(db$stack, h)
         }, finally = {
                 deleteLockFile(lockFileS(db))
         })
+        dbDelete(db$stack, h)
         node$value
 }
