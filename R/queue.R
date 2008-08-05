@@ -40,7 +40,7 @@ headQ <- function(db) {
                 stop("cannot create lock file")
         tryCatch({
                 h <- dbFetch(db$queue, "head")
-                
+
                 if(is.null(h))
                         return(NULL)
                 node <- dbFetch(db$queue, h)
