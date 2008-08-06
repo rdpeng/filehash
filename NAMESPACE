@@ -48,7 +48,8 @@ export(
        "dumpObjects",
        "db2env",
        "dumpImage",
-       "dumpList"
+       "dumpList",
+       "dumpEnv"
        )
 
 ## Stack stuff
