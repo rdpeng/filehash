@@ -232,7 +232,7 @@ setMethod("getMap", "filehashDB1",
 
 openDBConn <- function(filename, mode) {
         filecon <- try({
-                file(filename, model)
+                file(filename, mode)
         }, silent = TRUE)
 
         if(inherits(filecon, "try-error"))
