@@ -17,15 +17,15 @@ lockFileQ <- function(db) {
 }
 
 pushQ <- function(db, val) {
+        node <- list(value = val,
+                     nextkey = NULL)
+        key <- sha1(node)
+
         if(!createLockFile(lockFileQ(db)))
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFileQ(db)))
 
-        node <- list(value = val,
-                     nextkey = NULL)
-        key <- sha1(node)
         dbInsert(db$queue, key, node)
-
         h <- dbFetch(db$queue, "head")
 
         if(is.null(h)) {

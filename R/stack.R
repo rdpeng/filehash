@@ -16,25 +16,25 @@ lockFileS <- function(db) {
 }
 
 pushS <- function(db, val) {
-        if(!createLockFile(lockFileS(db)))
-                stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileS(db)))
-
         node <- list(value = val,
                     nextkey = dbFetch(db$stack, "top"))
         topkey <- sha1(node)
+
+        if(!createLockFile(lockFileS(db)))
+                stop("cannot create lock file")
+        on.exit(deleteLockFile(lockFileS(db)))
 
         dbInsert(db$stack, topkey, node)
         dbInsert(db$stack, "top", topkey)
 }
 
 mpushS <- function(db, vals) {
+        if(!is.list(vals))
+                vals <- as.list(vals)
         if(!createLockFile(lockFileS(db)))
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFileS(db)))
 
-        if(!is.list(vals))
-                vals <- as.list(vals)
         topkey <- dbFetch(db$stack, "top")
 
         for(i in seq_along(vals)) {
