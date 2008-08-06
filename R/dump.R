@@ -17,6 +17,11 @@
 ## 02110-1301, USA
 #####################################################################
 
+dumpEnv <- function(env, dbName) {
+        keys <- ls(env, all.names = TRUE)
+        dumpObjects(list = keys, dbName = dbName)
+}
+
 dumpImage <- function(dbName = "Rworkspace", type = NULL) {
         dumpObjects(list = ls(envir = globalenv(), all.names = TRUE),
                     dbName = dbName, type = type, envir = globalenv())
