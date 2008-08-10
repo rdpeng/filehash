@@ -291,8 +291,11 @@ setMethod("dbList", "filehashDB1",
 
                   if(length(map) == 0)
                           character(0)
-                  else
-                          names(as.list(map, all.names = TRUE))
+                  else {
+                          keys <- as.list(map, all.names = TRUE)
+                          use <- !sapply(keys, is.null)
+                          names(keys[use])
+                  }
           })
 
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
