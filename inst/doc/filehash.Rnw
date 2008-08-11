@@ -397,14 +397,6 @@ are stored with mangled names on the disk.  An advantage of this
 format is that most of the organizational work is delegated to the
 filesystem.
 
-There is a third format called ``DB'' and it is a predecessor of the
-``DB1'' format.  This format is like the ``DB1'' format except the map
-which associates keys to byte locations is stored in a separate file.
-Therefore, each database is represented by two separate files---an
-index file and a data file.  This format is retained for back
-compatibility but users should generally try to use the ``DB1'' format
-instead.
-
 
 \section{Extending filehash}
 
