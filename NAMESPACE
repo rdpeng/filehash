@@ -52,8 +52,8 @@ export(
        "dumpEnv"
        )
 
+## Queue stuff
+exportMethods("isEmpty", "top", "push", "pop", "createQ", "initQ")
+
 ## Stack stuff
 export("isEmptyS", "topS", "createS", "initS", "pushS", "mpushS", "popS")
-
-## Queue stuff
-export("isEmptyQ", "headQ", "createQ", "initQ", "pushQ", "popQ")
