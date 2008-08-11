@@ -204,18 +204,18 @@ setMethod("checkMap", "filehashDB1",
                           old.size
                   })
                   size.change <- old.size != cur.size
+
+                  if(!size.change)
+                          return(invisible(db))
                   map.orig <- getMap(db)
 
                   map <- if(is.null(map.orig))
                           readKeyMap(filecon)
-                  else if(size.change)
-                          readKeyMap(filecon, map.orig, old.size)
                   else
-                          map.orig
-                  if(!identical(map, map.orig)) {
-                          assign("map", map, db@meta$metaEnv)
-                          assign("dbfilesize", cur.size, db@meta$metaEnv)
-                  }
+                          readKeyMap(filecon, map.orig, old.size)
+                  assign("map", map, db@meta$metaEnv)
+                  assign("dbfilesize", cur.size, db@meta$metaEnv)
+
                   invisible(db)
           })
 
@@ -230,13 +230,20 @@ setMethod("getMap", "filehashDB1",
 ######################################################################
 ## Interface functions
 
+openDBConn <- function(filename, mode) {
+        filecon <- try({
+                file(filename, mode)
+        }, silent = TRUE)
+
+        if(inherits(filecon, "try-error"))
+                stop("unable to open connection to database")
+        filecon
+}
+
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-                  filecon <- try(file(db@datafile, "ab"), silent = TRUE)
-
-                  if(inherits(filecon, "try-error"))
-                          stop("unable to open connection to database")
+                  filecon <- openDBConn(db@datafile, "ab")
                   on.exit(close(filecon))
                   writeKeyValue(filecon, key, value)
           })
@@ -244,10 +251,7 @@ setMethod("dbInsert",
 setMethod("dbFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- try(file(db@datafile, "rb"), silent = TRUE)
-
-                  if(inherits(filecon, "try-error"))
-                          stop("unable to open connection to database")
+                  filecon <- openDBConn(db@datafile, "rb")
                   on.exit(close(filecon))
 
                   checkMap(db, filecon)
@@ -260,7 +264,7 @@ setMethod("dbFetch",
 setMethod("dbMultiFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- file(db@datafile, "rb")
+                  filecon <- openDBConn(db@datafile, "rb")
                   on.exit(close(filecon))
 
                   checkMap(db, filecon)
@@ -283,7 +287,7 @@ setMethod("dbExists", signature(db = "filehashDB1", key = "character"),
 
 setMethod("dbList", "filehashDB1",
           function(db, ...) {
-                  filecon <- file(db@datafile, "rb")
+                  filecon <- openDBConn(db@datafile, "rb")
                   on.exit(close(filecon))
 
                   checkMap(db, filecon)
@@ -300,7 +304,7 @@ setMethod("dbList", "filehashDB1",
 
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- file(db@datafile, "ab")
+                  filecon <- openDBConn(db@datafile, "ab")
                   on.exit(close(filecon))
 
                   writeNullKeyValue(filecon, key)
