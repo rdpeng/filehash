@@ -1,78 +1,96 @@
+setClass("queue",
+         representation(queue = "filehashDB1",
+                        name = "character")
+         )
+
+setMethod("show", "queue",
+          function(object) {
+                  cat(gettextf("<queue: %s>\n", object@name))
+                  invisible(object)
+          })
+
 createQ <- function(filename) {
         dbCreate(filename, "DB1")
         queue <- dbInit(filename, "DB1")
         dbInsert(queue, "head", NULL)
         dbInsert(queue, "tail", NULL)
 
-        list(queue = queue, name = filename)
+        new("queue", queue = queue, name = filename)
 }
 
 initQ <- function(filename) {
-        list(queue = dbInit(filename, "DB1"),
-             name = filename)
+        new("queue",
+            queue = dbInit(filename, "DB1"),
+            name = filename)
 }
 
-lockFileQ <- function(db) {
-        paste(db$name, "qlock", sep = ".")
-}
+setGeneric("lockFile", function(db, ...) standardGeneric("lockFile"))
 
-pushQ <- function(db, val) {
+## Public
+setGeneric("pop", function(db, ...) standardGeneric("pop"))
+setGeneric("push", function(db, val, ...) standardGeneric("push"))
+setGeneric("isEmpty", function(db, ...) standardGeneric("isEmpty"))
+setGeneric("top", function(db, ...) standardGeneric("top"))
+
+
+################################################################################
+## Methods
+
+setMethod("lockFile", "queue",
+          function(db, ...) {
+                  paste(db@name, "qlock", sep = ".")
+          })
+
+setMethod("push", c("queue", "ANY"), function(db, val, ...) {
+        ## Create a new tail node
         node <- list(value = val,
                      nextkey = NULL)
         key <- sha1(node)
 
-        if(!createLockFile(lockFileQ(db)))
+        if(!createLockFile(lockFile(db)))
                 stop("cannot create lock file")
-        on.exit(deleteLockFile(lockFileQ(db)))
+        on.exit(deleteLockFile(lockFile(db)))
 
-        dbInsert(db$queue, key, node)
-        h <- dbFetch(db$queue, "head")
-
-        if(is.null(h)) {
-                dbInsert(db$queue, "head", key)
-                dbInsert(db$queue, "tail", key)
-        }
+        if(isEmpty(db))
+                dbInsert(db@queue, "head", key)
         else {
-                tl <- dbFetch(db$queue, "tail")
-                oldtail <- dbFetch(db$queue, tl)
-                oldtail$nextkey <- key
-                dbInsert(db$queue, tl, oldtail)
-                dbInsert(db$queue, "tail", key)
+                ## Convert tail node to regular node
+                tailkey <- dbFetch(db@queue, "tail")
+                oldtail <- dbFetch(db@queue, tailkey)
+                dbInsert(db@queue, tl,
+                         list(value = oldtail$value, nextkey = key))
         }
-}
+        ## Insert new node and point tail to new node
+        dbInsert(db@queue, key, node)
+        dbInsert(db@queue, "tail", key)
+})
 
-isEmptyQ <- function(db) {
-        is.null(dbFetch(db$queue, "head"))
-}
+setMethod("isEmpty", "queue", function(db) {
+        is.null(dbFetch(db@queue, "head"))
+})
 
-headQ <- function(db) {
-        if(!createLockFile(lockFileQ(db)))
+setMethod("top", "queue", function(db, ...) {
+        if(!createLockFile(lockFile(db)))
                 stop("cannot create lock file")
-        tryCatch({
-                h <- dbFetch(db$queue, "head")
+        on.exit(deleteLockFile(lockFile(db)))
 
-                if(is.null(h))
-                        return(NULL)
-                node <- dbFetch(db$queue, h)
-        }, finally = {
-                deleteLockFile(lockFileQ(db))
-        })
+        if(isEmpty(db))
+                stop("queue is empty")
+        h <- dbFetch(db@queue, "head")
+        node <- dbFetch(db@queue, h)
         node$value
-}
+})
 
-popQ <- function(db) {
-        if(!createLockFile(lockFileQ(db)))
+setMethod("pop", "queue", function(db, ...) {
+        if(!createLockFile(lockFile(db)))
                 stop("cannot create lock file")
-        tryCatch({
-                h <- dbFetch(db$queue, "head")
+        on.exit(deleteLockFile(lockFile(db)))
 
-                if(is.null(h))
-                        return(NULL)
-                node <- dbFetch(db$queue, h)
-                dbInsert(db$queue, "head", node$nextkey)
-        }, finally = {
-                deleteLockFile(lockFileQ(db))
-        })
-        dbDelete(db$queue, h)
+        if(isEmpty(db))
+                stop("queue is empty")
+        h <- dbFetch(db@queue, "head")
+        node <- dbFetch(db@queue, h)
+        dbInsert(db@queue, "head", node$nextkey)
+        dbDelete(db@queue, h)
         node$value
-}
+})
