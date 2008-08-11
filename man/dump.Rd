@@ -3,6 +3,7 @@
 \alias{dumpImage}
 \alias{dumpDF}
 \alias{dumpList}
+\alias{dumpEnv}
 
 \title{Dump objects of database}
 \description{
@@ -13,6 +14,7 @@ dumpObjects(..., list = character(0), dbName, type = NULL, envir = parent.frame(
 dumpImage(dbName = "Rworkspace", type = NULL)
 dumpDF(data, dbName = NULL, type = NULL)
 dumpList(data, dbName = NULL, type = NULL)
+dumpEnv(env, dbName)
 }
 
 \arguments{
@@ -23,6 +25,7 @@ dumpList(data, dbName = NULL, type = NULL)
   \item{type}{type of database to create}
   \item{envir}{environment from which to obtain objects}
   \item{data}{a data frame or a list}
+  \item{env}{an environment}
 }
 \details{
   Objects dumped to a database can later be loaded via \code{dbLoad} or
@@ -37,6 +40,9 @@ dumpList(data, dbName = NULL, type = NULL)
   read from the database separately rather than having to load the
   entire data frame into memory.  \code{dumpList} works in a simlar
   way.
+
+  The \code{dumpEnv} function takes an environment and stores each
+  element of the environment in a \code{filehash} database.
 }
 
 \value{

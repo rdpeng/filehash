@@ -19,7 +19,7 @@
 
 dumpEnv <- function(env, dbName) {
         keys <- ls(env, all.names = TRUE)
-        dumpObjects(list = keys, dbName = dbName)
+        dumpObjects(list = keys, dbName = dbName, envir = env)
 }
 
 dumpImage <- function(dbName = "Rworkspace", type = NULL) {
