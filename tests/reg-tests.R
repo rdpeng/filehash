@@ -148,3 +148,25 @@ print(file.info(db@datafile)$size)
 
 summary(db$b)
 summary(db$c)
+
+
+################################################################################
+## Taken from the vignette
+
+file.remove("mydb")
+
+dbCreate("mydb")
+db <- dbInit("mydb")
+
+set.seed(100)
+
+dbInsert(db, "a", rnorm(100))
+value <- dbFetch(db, "a")
+mean(value)
+
+dbInsert(db, "b", 123)
+dbDelete(db, "a")
+dbList(db)
+dbExists(db, "a")
+
+file.remove("mydb")
