@@ -53,7 +53,8 @@ export(
        )
 
 ## Queue stuff
-exportMethods("isEmpty", "top", "push", "pop", "createQ", "initQ")
+exportMethods("isEmpty", "top", "push", "pop")
+export("createQ", "initQ")
 
 ## Stack stuff
 export("isEmptyS", "topS", "createS", "initS", "pushS", "mpushS", "popS")
