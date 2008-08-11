@@ -52,10 +52,10 @@ export(
        "dumpEnv"
        )
 
-## Queue stuff
+## Stack and Queue stuff
+exportClasses("stack", "queue")
 exportMethods("isEmpty", "top", "push", "pop")
-export("createQ", "initQ")
-
-## Stack stuff
 exportMethods("mpush")
+
+export("createQ", "initQ")
 export("createS", "initS")
