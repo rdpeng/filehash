@@ -227,6 +227,10 @@ setGeneric("dbDelete", function(db, key, ...) standardGeneric("dbDelete"))
 setGeneric("dbReorganize", function(db, ...) standardGeneric("dbReorganize"))
 setGeneric("dbUnlink", function(db, ...) standardGeneric("dbUnlink"))
 
+## Other
+setOldClass(c("file", "connection"))
+setGeneric("lockFile", function(db, ...) standardGeneric("lockFile"))
+
 ######################################################################
 ## Extractor/replacement
 

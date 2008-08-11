@@ -24,8 +24,6 @@ initQ <- function(filename) {
             name = filename)
 }
 
-setGeneric("lockFile", function(db, ...) standardGeneric("lockFile"))
-
 ## Public
 setGeneric("pop", function(db, ...) standardGeneric("pop"))
 setGeneric("push", function(db, val, ...) standardGeneric("push"))

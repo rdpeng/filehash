@@ -168,10 +168,10 @@ writeKeyValue <- function(con, key, value) {
         })
 }
 
-lockFileName <- function(con) {
+setMethod("lockFile", "file", function(db, ...) {
         ## Use 3 underscores for lock file
-        sprintf("%s___LOCK", summary(con)$description)
-}
+        sprintf("%s___LOCK", summary(db)$description)
+})
 
 createLockFile <- function(name) {
         status <- .Call("lock_file", name)
@@ -245,7 +245,7 @@ setMethod("dbInsert",
                   con <- openDBConn(db@datafile, "ab")
                   on.exit(close(con))
 
-                  lockname <- lockFileName(con)
+                  lockname <- lockFile(con)
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
@@ -258,7 +258,7 @@ setMethod("dbFetch",
                   con <- openDBConn(db@datafile, "rb")
                   on.exit(close(con))
 
-                  lockname <- lockFileName(con)
+                  lockname <- lockFile(con)
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
@@ -275,7 +275,7 @@ setMethod("dbMultiFetch",
                   con <- openDBConn(db@datafile, "rb")
                   on.exit(close(con))
 
-                  lockname <- lockFileName(con)
+                  lockname <- lockFile(con)
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
@@ -302,7 +302,7 @@ setMethod("dbList", "filehashDB1",
                   con <- openDBConn(db@datafile, "rb")
                   on.exit(close(con))
 
-                  lockname <- lockFileName(con)
+                  lockname <- lockFile(con)
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
@@ -323,7 +323,7 @@ setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
                   con <- openDBConn(db@datafile, "ab")
                   on.exit(close(con))
 
-                  lockname <- lockFileName(con)
+                  lockname <- lockFile(con)
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
