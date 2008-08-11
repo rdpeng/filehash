@@ -66,31 +66,25 @@ setMethod("isEmpty", "queue", function(db) {
 setMethod("top", "queue", function(db, ...) {
         if(!createLockFile(lockFile(db)))
                 stop("cannot create lock file")
-        tryCatch({
-                h <- dbFetch(db@queue, "head")
+        on.exit(deleteLockFile(lockFile(db)))
 
-                if(is.null(h))
-                        return(NULL)
-                node <- dbFetch(db@queue, h)
-        }, finally = {
-                deleteLockFile(lockFile(db))
-        })
+        if(isEmpty(db))
+                stop("queue is empty")
+        h <- dbFetch(db@queue, "head")
+        node <- dbFetch(db@queue, h)
         node$value
 }
 
 setMethod("pop", "queue", function(db, ...) {
         if(!createLockFile(lockFile(db)))
                 stop("cannot create lock file")
-        tryCatch({
-                h <- dbFetch(db@queue, "head")
+        on.exit(deleteLockFile(lockFile(db)))
 
-                if(is.null(h))
-                        return(NULL)
-                node <- dbFetch(db@queue, h)
-                dbInsert(db@queue, "head", node$nextkey)
-        }, finally = {
-                deleteLockFile(lockFile(db))
-        })
+        if(isEmpty(db))
+                stop("queue is empty")
+        h <- dbFetch(db@queue, "head")
+        node <- dbFetch(db@queue, h)
+        dbInsert(db@queue, "head", node$nextkey)
         dbDelete(db@queue, h)
         node$value
 }
