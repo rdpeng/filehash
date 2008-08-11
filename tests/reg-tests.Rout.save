@@ -1,5 +1,6 @@
-R version 2.5.1 (2007-06-27)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+
+R version 2.7.1 (2008-06-23)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -15,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(filehash)
-Simple key-value database (1.1 2008-04-30)
+Simple key-value database (2.0 2008-08-03)
 > 
 > ######################################################################
 > ## Test 'filehashRDS' class
@@ -163,6 +164,7 @@ Error in dbFetch(db, "c"): unable to obtain value for key 'c'
  [1]  5  4  3  2  1  6  7  8  9 10
 > 
 > dbDelete(db, "c")
+NULL
 > 
 > tryCatch(print(env$c), error = function(e) cat(as.character(e)))
 Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
@@ -259,4 +261,33 @@ Finished; reload database with 'dbInit'
 > summary(db$c)
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 0.0002346 0.2416000 0.4813000 0.4938000 0.7492000 0.9992000 
+> 
+> 
+> ################################################################################
+> ## Taken from the vignette
+> 
+> file.remove("mydb")
+[1] TRUE
+> 
+> dbCreate("mydb")
+[1] TRUE
+> db <- dbInit("mydb")
+> 
+> set.seed(100)
+> 
+> dbInsert(db, "a", rnorm(100))
+> value <- dbFetch(db, "a")
+> mean(value)
+[1] 0.002912563
+> 
+> dbInsert(db, "b", 123)
+> dbDelete(db, "a")
+NULL
+> dbList(db)
+[1] "b"
+> dbExists(db, "a")
+[1] FALSE
+> 
+> file.remove("mydb")
+[1] TRUE
 > 
