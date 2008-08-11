@@ -8,7 +8,7 @@
 \alias{top,queue-method}
 
 \title{Class "queue"}
-\description{A queue implementation using a 'filehash' database}
+\description{A queue implementation using a \code{filehash} database}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("queue", ...)} or
 by calling \code{createQ}.  Existing queues can be initialized with

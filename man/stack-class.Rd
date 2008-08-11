@@ -9,7 +9,7 @@
 \alias{top,stack-method}
 
 \title{Class "stack"}
-\description{A stack implementation using a 'filehash' database}
+\description{A stack implementation using a \code{filehash} database}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("stack", ...)} or
 by calling \code{createS}.  Existing queues can be initialized with
