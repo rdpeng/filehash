@@ -57,4 +57,5 @@ exportMethods("isEmpty", "top", "push", "pop")
 export("createQ", "initQ")
 
 ## Stack stuff
-export("isEmptyS", "topS", "createS", "initS", "pushS", "mpushS", "popS")
+exportMethods("mpush")
+export("createS", "initS")
