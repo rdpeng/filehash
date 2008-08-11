@@ -204,18 +204,18 @@ setMethod("checkMap", "filehashDB1",
                           old.size
                   })
                   size.change <- old.size != cur.size
-
-                  if(!size.change)
-                          return(invisible(db))
                   map.orig <- getMap(db)
 
                   map <- if(is.null(map.orig))
                           readKeyMap(filecon)
-                  else
+                  else if(size.change)
                           readKeyMap(filecon, map.orig, old.size)
-                  assign("map", map, db@meta$metaEnv)
-                  assign("dbfilesize", cur.size, db@meta$metaEnv)
-
+                  else
+                          map.orig
+                  if(!identical(map, map.orig)) {
+                          assign("map", map, db@meta$metaEnv)
+                          assign("dbfilesize", cur.size, db@meta$metaEnv)
+                  }
                   invisible(db)
           })
 
