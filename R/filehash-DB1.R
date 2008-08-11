@@ -181,11 +181,16 @@ lockFileName <- function(con) {
 
 createLockFile <- function(name) {
         status <- .Call("lock_file", name)
-        isTRUE(status >= 0)
+
+        if(!isTRUE(status >= 0))
+                stop("cannot create lock file")
+        TRUE
 }
 
 deleteLockFile <- function(name) {
-        file.remove(name)
+        if(!file.remove(name))
+                stop("cannot remove lock file")
+        TRUE
 }
 
 ######################################################################
