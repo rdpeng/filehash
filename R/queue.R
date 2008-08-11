@@ -36,6 +36,7 @@ setMethod("lockFile", "queue",
           })
 
 setMethod("push", c("queue", "ANY"), function(db, val, ...) {
+        ## Create a new tail node
         node <- list(value = val,
                      nextkey = NULL)
         key <- sha1(node)
@@ -44,20 +45,18 @@ setMethod("push", c("queue", "ANY"), function(db, val, ...) {
                 stop("cannot create lock file")
         on.exit(deleteLockFile(lockFile(db)))
 
-        dbInsert(db@queue, key, node)
-        h <- dbFetch(db@queue, "head")
-
-        if(is.null(h)) {
+        if(isEmpty(db))
                 dbInsert(db@queue, "head", key)
-                dbInsert(db@queue, "tail", key)
-        }
         else {
-                tl <- dbFetch(db@queue, "tail")
-                oldtail <- dbFetch(db@queue, tl)
-                oldtail$nextkey <- key
-                dbInsert(db@queue, tl, oldtail)
-                dbInsert(db@queue, "tail", key)
+                ## Convert tail node to regular node
+                tailkey <- dbFetch(db@queue, "tail")
+                oldtail <- dbFetch(db@queue, tailkey)
+                dbInsert(db@queue, tl,
+                         list(value = oldtail$value, nextkey = key))
         }
+        ## Insert new node and point tail to new node
+        dbInsert(db@queue, key, node)
+        dbInsert(db@queue, "tail", key)
 })
 
 setMethod("isEmpty", "queue", function(db) {
