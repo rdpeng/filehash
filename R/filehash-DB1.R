@@ -134,8 +134,6 @@ writeNullKeyValue <- function(con, key) {
                 truncate(con)
                 cond
         }
-        if(!createLockFile(lockFileName(con)))
-                stop("cannot create lock file")
         tryCatch({
                 serialize(key, con)
 
@@ -143,7 +141,6 @@ writeNullKeyValue <- function(con, key) {
                 serialize(len, con)
         }, interrupt = handler, error = handler, finally = {
                 flush(con)
-                deleteLockFile(lockFileName(con))
         })
 }
 
@@ -158,8 +155,6 @@ writeKeyValue <- function(con, key, value) {
                 truncate(con)
                 cond
         }
-        if(!createLockFile(lockFileName(con)))
-                stop("cannot create lock file")
         tryCatch({
                 serialize(key, con)
 
@@ -170,7 +165,6 @@ writeKeyValue <- function(con, key, value) {
                 writeBin(byteData, con)
         }, interrupt = handler, error = handler, finally = {
                 flush(con)
-                deleteLockFile(lockFileName(con))
         })
 }
 
@@ -232,50 +226,63 @@ setMethod("getMap", "filehashDB1",
                   get("map", db@meta$metaEnv)
           })
 
-######################################################################
+################################################################################
 ## Interface functions
 
 openDBConn <- function(filename, mode) {
-        filecon <- try({
+        con <- try({
                 file(filename, mode)
         }, silent = TRUE)
 
-        if(inherits(filecon, "try-error"))
+        if(inherits(con, "try-error"))
                 stop("unable to open connection to database")
-        filecon
+        con
 }
 
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-                  filecon <- openDBConn(db@datafile, "ab")
-                  on.exit(close(filecon))
-                  writeKeyValue(filecon, key, value)
+                  con <- openDBConn(db@datafile, "ab")
+                  on.exit(close(con))
+
+                  lockname <- lockFileName(con)
+                  createLockFile(lockname)
+                  on.exit(deleteLockFile(lockname), add = TRUE)
+
+                  writeKeyValue(con, key, value)
           })
 
 setMethod("dbFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- openDBConn(db@datafile, "rb")
-                  on.exit(close(filecon))
+                  con <- openDBConn(db@datafile, "rb")
+                  on.exit(close(con))
 
-                  checkMap(db, filecon)
+                  lockname <- lockFileName(con)
+                  createLockFile(lockname)
+                  on.exit(deleteLockFile(lockname), add = TRUE)
+
+                  checkMap(db, con)
                   map <- getMap(db)
 
-                  r <- readKeys(filecon, map, key[1])
+                  r <- readKeys(con, map, key[1])
                   r[[1]]
           })
 
 setMethod("dbMultiFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- openDBConn(db@datafile, "rb")
-                  on.exit(close(filecon))
+                  con <- openDBConn(db@datafile, "rb")
+                  on.exit(close(con))
 
-                  checkMap(db, filecon)
+                  lockname <- lockFileName(con)
+                  createLockFile(lockname)
+                  on.exit(deleteLockFile(lockname), add = TRUE)
+
+                  checkMap(db, con)
                   map <- getMap(db)
 
-                  readKeys(filecon, map, key)
+                  readKeys(con, map, key)
           })
 
 setMethod("[", signature(x = "filehashDB1", i = "character", j = "missing",
@@ -292,10 +299,14 @@ setMethod("dbExists", signature(db = "filehashDB1", key = "character"),
 
 setMethod("dbList", "filehashDB1",
           function(db, ...) {
-                  filecon <- openDBConn(db@datafile, "rb")
-                  on.exit(close(filecon))
+                  con <- openDBConn(db@datafile, "rb")
+                  on.exit(close(con))
 
-                  checkMap(db, filecon)
+                  lockname <- lockFileName(con)
+                  createLockFile(lockname)
+                  on.exit(deleteLockFile(lockname), add = TRUE)
+
+                  checkMap(db, con)
                   map <- getMap(db)
 
                   if(length(map) == 0)
@@ -309,10 +320,14 @@ setMethod("dbList", "filehashDB1",
 
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
-                  filecon <- openDBConn(db@datafile, "ab")
-                  on.exit(close(filecon))
+                  con <- openDBConn(db@datafile, "ab")
+                  on.exit(close(con))
 
-                  writeNullKeyValue(filecon, key)
+                  lockname <- lockFileName(con)
+                  createLockFile(lockname)
+                  on.exit(deleteLockFile(lockname), add = TRUE)
+
+                  writeNullKeyValue(con, key)
           })
 
 setMethod("dbUnlink", "filehashDB1",
