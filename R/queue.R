@@ -73,7 +73,7 @@ setMethod("top", "queue", function(db, ...) {
         h <- dbFetch(db@queue, "head")
         node <- dbFetch(db@queue, h)
         node$value
-}
+})
 
 setMethod("pop", "queue", function(db, ...) {
         if(!createLockFile(lockFile(db)))
@@ -87,4 +87,4 @@ setMethod("pop", "queue", function(db, ...) {
         dbInsert(db@queue, "head", node$nextkey)
         dbDelete(db@queue, h)
         node$value
-}
+})
