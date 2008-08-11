@@ -47,8 +47,7 @@ setMethod("push", c("queue", "ANY"), function(db, val, ...) {
                      nextkey = NULL)
         key <- sha1(node)
 
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         if(isEmpty(db))
@@ -70,8 +69,7 @@ setMethod("isEmpty", "queue", function(db) {
 })
 
 setMethod("top", "queue", function(db, ...) {
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         if(isEmpty(db))
@@ -82,8 +80,7 @@ setMethod("top", "queue", function(db, ...) {
 })
 
 setMethod("pop", "queue", function(db, ...) {
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         if(isEmpty(db))

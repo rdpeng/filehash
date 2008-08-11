@@ -32,8 +32,7 @@ setMethod("push", c("stack", "ANY"), function(db, val, ...) {
                     nextkey = dbFetch(db@stack, "top"))
         topkey <- sha1(node)
 
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         dbInsert(db@stack, topkey, node)
@@ -45,8 +44,7 @@ setGeneric("mpush", function(db, vals, ...) standardGeneric("mpush"))
 setMethod("mpush", c("stack", "ANY"), function(db, vals, ...) {
         if(!is.list(vals))
                 vals <- as.list(vals)
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         topkey <- dbFetch(db@stack, "top")
@@ -68,8 +66,7 @@ setMethod("isEmpty", "stack", function(db, ...) {
 
 
 setMethod("top", "stack", function(db, ...) {
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         if(isEmpty(db))
@@ -80,8 +77,7 @@ setMethod("top", "stack", function(db, ...) {
 })
 
 setMethod("pop", "stack", function(db, ...) {
-        if(!createLockFile(lockFile(db)))
-                stop("cannot create lock file")
+        createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
 
         if(isEmpty(db))
