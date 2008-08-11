@@ -3,6 +3,12 @@ setClass("queue",
                         name = "character")
          )
 
+setMethod("show", "queue",
+          function(object) {
+                  cat(gettextf("<queue: %s>\n", object@name))
+                  invisible(object)
+          })
+
 createQ <- function(filename) {
         dbCreate(filename, "DB1")
         queue <- dbInit(filename, "DB1")
