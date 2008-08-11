@@ -10,12 +10,11 @@
                           initialize = get(iname, mode="function"))
                 assign(type, r, .filehashFormats)
         }
-        assign("keyMapMethod", "C", .filehashOptions)  ## The default (non-C) method
 }
 
 .onAttach <- function(lib, pkg) {
         dcf <- read.dcf(file.path(lib, pkg, "DESCRIPTION"))
-        msg <- gettextf("%s (%s %s)", dcf[, "Title"],
+        msg <- gettextf("%s: %s (%s %s)", dcf[, "Package"], dcf[, "Title"],
                         as.character(dcf[, "Version"]), dcf[, "Date"])
         packageStartupMessage(paste(strwrap(msg), collapse = "\n"))
 }
