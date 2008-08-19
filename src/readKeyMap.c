@@ -7,7 +7,7 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 {
 	SEXP key, datalen;
 	FILE *fp;	
-	int status;
+	int status, len;
 	struct R_inpstream_st in;
 	
 	if(!isEnvironment(map))
@@ -33,24 +33,30 @@ SEXP read_key_map(SEXP filename, SEXP map, SEXP filesize, SEXP pos)
 	while(INTEGER(pos)[0] < INTEGER(filesize)[0]) {
 		PROTECT(key = R_Unserialize(&in));
 		PROTECT(datalen = R_Unserialize(&in));
+		len = INTEGER(datalen)[0];
 
 		/* calculate the position of file pointer */
 		INTEGER(pos)[0] = ftell(fp);
-	
-		if(INTEGER(datalen)[0] > 0) {
-			/* create a new entry in the key map */
-			defineVar(install(CHAR(STRING_ELT(key, 0))), 
-				  duplicate(pos), map);
-			
-			/* advance to the next key */
-			fseek(fp, INTEGER(datalen)[0], SEEK_CUR);
-			INTEGER(pos)[0] = INTEGER(pos)[0] + INTEGER(datalen)[0];
-		}
-		else {
+
+		if(len <= 0) {
 			/* key has been deleted; set pos to NULL */
 			defineVar(install(CHAR(STRING_ELT(key, 0))),
 				  R_NilValue, map);
+			UNPROTECT(2);
+			continue;
 		}
+		/* create a new entry in the key map */
+		defineVar(install(CHAR(STRING_ELT(key, 0))), duplicate(pos), map);
+
+		/* advance to the next key */
+		status = fseek(fp, len, SEEK_CUR);
+
+		if(status < 0) {
+			fclose(fp);
+			error("problem with seek");
+		}
+		INTEGER(pos)[0] = INTEGER(pos)[0] + len;
+
 		UNPROTECT(2);
 	}
 	UNPROTECT(2);
