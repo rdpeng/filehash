@@ -196,7 +196,7 @@ deleteLockFile <- function(name) {
         TRUE
 }
 
-######################################################################
+################################################################################
 ## Internal utilities
 
 filesize <- gotoEndPos
@@ -212,15 +212,23 @@ setMethod("checkMap", "filehashDB1",
                           old.size
                   })
                   size.change <- old.size != cur.size
-                  map.orig <- getMap(db)
+                  map <- getMap(db)
+                  map0 <- map
 
-                  map <- if(is.null(map.orig))
-                          readKeyMap(filecon)
-                  else if(size.change)
-                          readKeyMap(filecon, map.orig, old.size)
+                  if(is.null(map))
+                          map <- readKeyMap(filecon)
+                  else if(size.change) {
+                          ## Modify 'map.old' directly
+                          map <- tryCatch({
+                                  readKeyMap(filecon, map, old.size)
+                          }, error = function(err) {
+                                  message(conditionMessage(err))
+                                  map0
+                          })
+                  }
                   else
-                          map.orig
-                  if(!identical(map, map.orig)) {
+                          map <- map0
+                  if(!identical(map, map0)) {
                           db@meta$updatemap(map)
                           db@meta$updatesize(cur.size)
                   }
