@@ -28,8 +28,8 @@
 
 ######################################################################
 
-## 'meta' is a list with an element called 'metaEnv'.  'metaEnv' is an
-## environment that contains metadata for the database.
+## 'meta' is a list of functions for updating the file size of the
+## database and the file map.
 
 setClass("filehashDB1",
          representation(datafile = "character",
@@ -42,8 +42,6 @@ setValidity("filehashDB1",
                     if(!file.exists(object@datafile))
                             return(gettextf("datafile '%s' does not exist",
                                             datafile))
-                    if(is.null(object@meta$metaEnv))
-                            return(gettextf("object is missing 'metaEnv' element"))
                     TRUE
             })
 
@@ -62,14 +60,25 @@ createDB1 <- function(dbName) {
 }
 
 makeMetaEnv <- function(filename) {
-        ## Create database map and store in environment.  Don't read map
-        ## until you need it; for example, it's not needed for *writing*
-        ## to the database.
-        metaEnv <- new.env(parent = emptyenv())
-        metaEnv$map <- NULL  ## 'NULL' indicates the map needs to be read
-        metaEnv$dbfilesize <- file.info(filename)$size
+        dbmap <- NULL  ## 'NULL' indicates the map needs to be read
+        dbfilesize <- file.info(filename)$size
 
-        metaEnv
+        updatesize <- function(size) {
+                dbfilesize <<- size
+        }
+        updatemap <- function(map) {
+                dbmap <<- map
+        }
+        getsize <- function() {
+                dbfilesize
+        }
+        getmap <- function() {
+                dbmap
+        }
+        list(updatesize = updatesize,
+             updatemap = updatemap,
+             getmap = getmap,
+             getsize = getsize)
 }
 
 initializeDB1 <- function(dbName) {
@@ -79,7 +88,7 @@ initializeDB1 <- function(dbName) {
 
         new("filehashDB1",
             datafile = dbName,
-            meta = list(metaEnv = makeMetaEnv(dbName)),
+            meta = makeMetaEnv(dbName),
             name = basename(dbName)
             )
 }
@@ -196,7 +205,7 @@ setGeneric("checkMap", function(db, ...) standardGeneric("checkMap"))
 
 setMethod("checkMap", "filehashDB1",
           function(db, filecon, ...) {
-                  old.size <- get("dbfilesize", db@meta$metaEnv)
+                  old.size <- db@meta$getsize()
                   cur.size <- tryCatch({
                           filesize(filecon)
                   }, error = function(err) {
@@ -212,8 +221,8 @@ setMethod("checkMap", "filehashDB1",
                   else
                           map.orig
                   if(!identical(map, map.orig)) {
-                          assign("map", map, db@meta$metaEnv)
-                          assign("dbfilesize", cur.size, db@meta$metaEnv)
+                          db@meta$updatemap(map)
+                          db@meta$updatesize(cur.size)
                   }
                   invisible(db)
           })
@@ -223,7 +232,7 @@ setGeneric("getMap", function(db) standardGeneric("getMap"))
 
 setMethod("getMap", "filehashDB1",
           function(db) {
-                  get("map", db@meta$metaEnv)
+                  db@meta$getmap()
           })
 
 ################################################################################
