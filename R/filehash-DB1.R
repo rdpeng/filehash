@@ -282,8 +282,8 @@ setMethod("dbFetch",
                   checkMap(db, con)
                   map <- getMap(db)
 
-                  r <- readKeys(con, map, key[1])
-                  r[[1]]
+                  val <- readSingleKey(con, map, key)
+                  val
           })
 
 setMethod("dbMultiFetch",
