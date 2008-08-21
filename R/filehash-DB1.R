@@ -396,7 +396,7 @@ reorganizeDB <- function(db, ...) {
                 return(FALSE)
         }
         on.exit()
-        message("Finished; reload database with 'dbInit'")
+        cat("Finished; reload database with 'dbInit'\n")
         TRUE
 }
 
