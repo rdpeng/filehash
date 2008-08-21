@@ -33,7 +33,7 @@
 
 setClass("filehashDB1",
          representation(datafile = "character",
-                        meta = "list"),  ## contains 'metaEnv' element
+                        meta = "list"),
          contains = "filehash"
          )
 
