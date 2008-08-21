@@ -420,6 +420,8 @@ hasWorkingFtell <- function() {
                 end <- seek(con)
                 offset <- end - begin
                 isTRUE(offset == 10)
+        }, error = function(e) {
+                FALSE
         }, finally = {
                 close(con)
                 unlink(tfile)
