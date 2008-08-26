@@ -1,0 +1,115 @@
+
+R version 2.7.1 (2008-06-23)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ## Test databases
+> 
+> library(filehash)
+filehash: Simple key-value database (2.0 2008-08-03)
+> 
+> testdblist <- dir(pattern = glob2rx("testdb-v*"))
+> 
+> for(testname in testdblist) {
++         msg <- sprintf("DATABASE: %s\n", testname)
++         cat(paste(rep("=", nchar(msg)), collapse = ""), "\n")
++         cat(msg)
++         cat(paste(rep("=", nchar(msg)), collapse = ""), "\n")
++         db <- dbInit(testname, "DB1")
++         keys <- dbList(db)
++         print(keys)
++ 
++         for(k in keys) {
++                 cat("key:", k, "\n")
++                 val <- dbFetch(db, k)
++                 print(val)
++                 cat("\n")
++         }
++ }
+====================== 
+DATABASE: testdb-v1.1
+====================== 
+[1] "a"     "c"     "list"  "entry"
+key: a 
+ [1] -0.6264538  0.1836433 -0.8356286  1.5952808  0.3295078 -0.8204684
+ [7]  0.4874291  0.7383247  0.5757814 -0.3053884
+
+key: c 
+[1] 1
+
+key: list 
+[[1]]
+[1] 1
+
+[[2]]
+[1] 2
+
+[[3]]
+[1] 3
+
+[[4]]
+[1] 4
+
+[[5]]
+[1] 5
+
+[[6]]
+[1] 6
+
+[[7]]
+[1] "a"
+
+
+key: entry 
+[1] "string"
+
+====================== 
+DATABASE: testdb-v2.0
+====================== 
+[1] "a"     "c"     "list"  "entry"
+key: a 
+ [1] -0.6264538  0.1836433 -0.8356286  1.5952808  0.3295078 -0.8204684
+ [7]  0.4874291  0.7383247  0.5757814 -0.3053884
+
+key: c 
+[1] 1
+
+key: list 
+[[1]]
+[1] 1
+
+[[2]]
+[1] 2
+
+[[3]]
+[1] 3
+
+[[4]]
+[1] 4
+
+[[5]]
+[1] 5
+
+[[6]]
+[1] 6
+
+[[7]]
+[1] "a"
+
+
+key: entry 
+[1] "string"
+
+> 
