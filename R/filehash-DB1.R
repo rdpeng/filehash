@@ -266,7 +266,7 @@ setMethod("dbInsert",
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
-                  writeKeyValue(con, key, value)
+                  invisible(writeKeyValue(con, key, value))
           })
 
 setMethod("dbFetch",
@@ -344,7 +344,7 @@ setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
                   createLockFile(lockname)
                   on.exit(deleteLockFile(lockname), add = TRUE)
 
-                  writeNullKeyValue(con, key)
+                  invisible(writeNullKeyValue(con, key))
           })
 
 setMethod("dbUnlink", "filehashDB1",
