@@ -170,3 +170,11 @@ dbList(db)
 dbExists(db, "a")
 
 file.remove("mydb")
+
+################################################################################
+## Check queue
+
+db <- createQ("testq")
+push(db, 1)
+push(db, 2)
+top(db)
