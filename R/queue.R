@@ -54,8 +54,8 @@ setMethod("push", c("queue", "ANY"), function(db, val, ...) {
                 ## Convert tail node to regular node
                 tailkey <- dbFetch(db@queue, "tail")
                 oldtail <- dbFetch(db@queue, tailkey)
-                dbInsert(db@queue, tl,
-                         list(value = oldtail$value, nextkey = key))
+                oldtail$nextkey <- key
+                dbInsert(db@queue, tailkey, oldtail)
         }
         ## Insert new node and point tail to new node
         dbInsert(db@queue, key, node)
