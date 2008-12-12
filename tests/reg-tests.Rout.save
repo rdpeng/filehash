@@ -1,5 +1,5 @@
 
-R version 2.7.1 (2008-06-23)
+R version 2.8.0 (2008-10-20)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -164,7 +164,6 @@ Error in dbFetch(db, "c"): unable to obtain value for key 'c'
  [1]  5  4  3  2  1  6  7  8  9 10
 > 
 > dbDelete(db, "c")
-NULL
 > 
 > tryCatch(print(env$c), error = function(e) cat(as.character(e)))
 Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
@@ -282,7 +281,6 @@ Finished; reload database with 'dbInit'
 > 
 > dbInsert(db, "b", 123)
 > dbDelete(db, "a")
-NULL
 > dbList(db)
 [1] "b"
 > dbExists(db, "a")
@@ -290,4 +288,18 @@ NULL
 > 
 > file.remove("mydb")
 [1] TRUE
+> 
+> ################################################################################
+> ## Check queue
+> 
+> db <- createQ("testq")
+> push(db, 1)
+> push(db, 2)
+> top(db)
+[1] 1
+> 
+> pop(db)
+[1] 1
+> top(db)
+[1] 2
 > 
