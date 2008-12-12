@@ -178,3 +178,6 @@ db <- createQ("testq")
 push(db, 1)
 push(db, 2)
 top(db)
+
+pop(db)
+top(db)
