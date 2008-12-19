@@ -1,5 +1,5 @@
 Package:  filehash
-Version:  2.1
+Version:  2.0-1
 Date:  2008-12-12
 Depends:  R (>= 2.7.0), methods
 Imports:  utils
