@@ -1,5 +1,5 @@
 
-R version 2.7.1 (2008-06-23)
+R version 2.8.0 (2008-10-20)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -18,7 +18,7 @@ Type 'q()' to quit R.
 > ## Test databases
 > 
 > library(filehash)
-filehash: Simple key-value database (2.0 2008-08-03)
+filehash: Simple key-value database (2.0-1 2008-12-19)
 > 
 > testdblist <- dir(pattern = glob2rx("testdb-v*"))
 > 
