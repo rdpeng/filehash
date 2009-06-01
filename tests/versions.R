@@ -1,6 +1,6 @@
 ## Test databases
 
-library(filehash)
+suppressMessages(library(filehash))
 
 testdblist <- dir(pattern = glob2rx("testdb-v*"))
 
