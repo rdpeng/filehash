@@ -49,8 +49,8 @@
 \alias{[[,filehash,numeric,missing-method}
 \alias{[[<-,filehash,character,missing-method}
 \alias{[[<-,filehash,numeric,missing-method}
-\alias{$<-,filehash,character-method}
-\alias{$,filehash,character-method}
+\alias{$<-,filehash-method}
+\alias{$,filehash-method}
 
 \title{Class "filehash"}
 

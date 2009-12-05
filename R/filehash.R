@@ -239,7 +239,7 @@ setMethod("[[", signature(x = "filehash", i = "character", j = "missing"),
               dbFetch(x, i)
           })
 
-setMethod("$", signature(x = "filehash", name = "character"),
+setMethod("$", signature(x = "filehash"),
           function(x, name) {
               dbFetch(x, name)
           })
@@ -250,7 +250,7 @@ setReplaceMethod("[[", signature(x = "filehash", i = "character", j = "missing")
                      x
                  })
 
-setReplaceMethod("$", signature(x = "filehash", name = "character"),
+setReplaceMethod("$", signature(x = "filehash"),
                  function(x, name, value) {
                      dbInsert(x, name, value)
                      x
