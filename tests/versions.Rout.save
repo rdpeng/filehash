@@ -1,4 +1,3 @@
-
 R version 2.10.1 Patched (--)
 Copyright (C)  The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
@@ -17,8 +16,7 @@ Type 'q()' to quit R.
 
 > ## Test databases
 > 
-> library(filehash)
-filehash: Simple key-value database (2.0-2 2009-12-05)
+> suppressMessages(library(filehash))
 > 
 > testdblist <- dir(pattern = glob2rx("testdb-v*"))
 > 

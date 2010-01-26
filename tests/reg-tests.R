@@ -1,4 +1,4 @@
-library(filehash)
+suppressMessages(library(filehash))
 
 ######################################################################
 ## Test 'filehashRDS' class
