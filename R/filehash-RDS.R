@@ -134,6 +134,14 @@ setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
                   val
           })
 
+setMethod("dbMultiFetch",
+          signature(db = "filehashRDS", key = "character"),
+          function(db, key, ...) {
+                  r <- lapply(key, function(k) dbFetch(db, k))
+                  names(r) <- k
+                  r
+          })
+
 setMethod("dbExists", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   key %in% dbList(db)
