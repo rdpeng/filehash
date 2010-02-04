@@ -138,7 +138,7 @@ setMethod("dbMultiFetch",
           signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   r <- lapply(key, function(k) dbFetch(db, k))
-                  names(r) <- k
+                  names(r) <- key
                   r
           })
 
