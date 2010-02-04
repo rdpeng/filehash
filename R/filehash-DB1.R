@@ -302,12 +302,6 @@ setMethod("dbMultiFetch",
                   readKeys(con, map, key)
           })
 
-setMethod("[", signature(x = "filehashDB1", i = "character", j = "missing",
-                         drop = "missing"),
-          function(x, i , j, drop) {
-                  dbMultiFetch(x, i)
-          })
-
 setMethod("dbExists", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
                   dbkeys <- dbList(db)

@@ -218,8 +218,12 @@ setMethod("lapply", signature(X = "filehash"),
 ######################################################################
 ## Database interface
 
-setGeneric("dbMultiFetch", function(db, key, ...) standardGeneric("dbMultiFetch"))
-setGeneric("dbInsert", function(db, key, value, ...) standardGeneric("dbInsert"))
+setGeneric("dbMultiFetch", function(db, key, ...) {
+        standardGeneric("dbMultiFetch")
+})
+setGeneric("dbInsert", function(db, key, value, ...) {
+        standardGeneric("dbInsert")
+})
 setGeneric("dbFetch", function(db, key, ...) standardGeneric("dbFetch"))
 setGeneric("dbExists", function(db, key, ...) standardGeneric("dbExists"))
 setGeneric("dbList", function(db, ...) standardGeneric("dbList"))
@@ -270,9 +274,10 @@ setMethod("[[", signature(x = "filehash", i = "numeric", j = "missing"),
               stop("numeric indices not allowed")
           })
 
-setMethod("[", signature(x = "filehash", i = "ANY", j = "ANY", drop = "missing"),
-          function(x, i, j, drop) {
-              stop("multiple indices via '[' not allowed")
+setMethod("[", signature(x = "filehash", i = "character", j = "missing",
+                         drop = "missing"),
+          function(x, i , j, drop) {
+                  dbMultiFetch(x, i)
           })
 
 
