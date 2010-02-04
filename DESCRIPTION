@@ -1,6 +1,6 @@
 Package:  filehash
-Version:  2.0-2
-Date:  2009-12-05
+Version:  2.1
+Date:  2010-02-04
 Depends:  R (>= 2.9.0), methods
 Imports:  utils
 Collate:  filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R hash.R queue.R stack.R zzz.R
