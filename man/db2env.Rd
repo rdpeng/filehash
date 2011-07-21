@@ -89,6 +89,8 @@ ls(env)
 env <- new.env()
 dbLazyLoad(db, env)
 ls(env)
+
+as(db, "list")
 }
 
 \keyword{database}
