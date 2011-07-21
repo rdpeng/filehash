@@ -42,7 +42,10 @@
 \alias{coerce,filehashDB1,filehashRDS-method}
 \alias{coerce,filehashDB1,list-method}
 \alias{coerce,filehashDB,filehashDB1-method}
+\alias{coerce,filehash,list-method}
 \alias{lapply,filehash-method}
+\alias{names,filehash-method}
+\alias{length,filehash-method}
 
 \alias{[,filehash,character,missing,missing-method}
 \alias{[[,filehash,character,missing-method}
@@ -124,6 +127,8 @@
       operator much like with a list or environment}
     \item{lapply}{works much like \code{lapply} with lists; a list is
       returned.}
+    \item{names}{returns all of the keys in the database}
+    \item{length}{returns the number of elements in the database}
   }
 }
 

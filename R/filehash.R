@@ -192,6 +192,25 @@ db2env <- function(db) {
 ######################################################################
 ## Other methods
 
+setGeneric("names")
+setMethod("names", "filehash",
+          function(x) {
+                  dbList(x)
+          })
+
+setGeneric("length")
+setMethod("length", "filehash",
+          function(x) {
+                  length(dbList(x))
+          })
+
+setAs("filehash", "list",
+      function(from) {
+              env <- new.env(hash = TRUE)
+              dbLoad(from, env)
+              as.list(env, all.names = TRUE)
+      })
+
 setGeneric("with")
 setMethod("with", "filehash",
           function(data, expr, ...) {

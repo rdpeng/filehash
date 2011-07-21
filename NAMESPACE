@@ -41,7 +41,9 @@ exportMethods(
               "show",
               "with",
               "coerce",
-              "lapply"
+              "lapply",
+              "names",
+              "length"
               )
 
 export(
