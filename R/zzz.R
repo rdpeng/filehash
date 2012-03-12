@@ -1,6 +1,4 @@
 .onLoad <- function(lib, pkg) {
-        if(!require(methods, quietly = TRUE))
-                stop("'methods' package required")
         assign("defaultType", "DB1", .filehashOptions)
 
         for(type in c("DB1", "RDS")) {
