@@ -435,7 +435,7 @@ a backend based on the \pkg{RSQLite} package.
 
 
 
-\bibliographystyle{asa}
+\bibliographystyle{alpha}
 \bibliography{combined}
 
 
