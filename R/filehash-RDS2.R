@@ -45,21 +45,7 @@ initializeRDS2 <- function(dbName) {
             name = basename(dbName))
 }
 
-## For case-insensitive file systems, objects with the same name but
-## differ by capitalization might get clobbered.  `mangleName()'
-## inserts a "@" before each capital letter and `unMangleName()'
-## reverses the operation.
-
-mangleName <- function(oname) {
-        gsub("([A-Z])", "@\\1", oname, perl = TRUE)
-}
-
-unMangleName <- function(mname) {
-        gsub("@", "", mname, fixed = TRUE)
-}
-
 ## Function for mapping a key to a path on the filesystem
-setGeneric("objectFile", function(db, key) standardGeneric("objectFile"))
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
                   sha1.key <- sha1(key)
@@ -132,40 +118,6 @@ setMethod("dbInsert",
                   return(rval)
           })
 
-setMethod("dbFetch", signature(db = "filehashRDS2", key = "character"),
-          function(db, key, ...) {
-                  ## Create filename from key
-                  ofile <- objectFile(db, key)
-
-                  ## Open connection
-                  con <- tryCatch({
-                          gzfile(ofile, "rb")
-                  }, condition = function(cond) {
-                          cond
-                  })
-                  if(inherits(con, "condition")) 
-                          stop(gettextf("unable to obtain value for key '%s'",
-                                        key))
-                  on.exit(close(con))
-
-                  ## Read data
-                  val <- unserialize(con)
-                  val
-          })
-
-setMethod("dbMultiFetch",
-          signature(db = "filehashRDS2", key = "character"),
-          function(db, key, ...) {
-                  r <- lapply(key, function(k) dbFetch(db, k))
-                  names(r) <- key
-                  r
-          })
-
-setMethod("dbExists", signature(db = "filehashRDS2", key = "character"),
-          function(db, key, ...) {
-                  key %in% dbList(db)
-          })
-
 setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
@@ -183,12 +135,3 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
                   status <- file.remove(ofile)
                   invisible(isTRUE(status))
           })
-
-setMethod("dbUnlink", "filehashRDS2",
-          function(db, ...) {
-                  ## delete the entire database directory
-                  d <- db@dir
-                  status <- unlink(d, recursive = TRUE)
-                  invisible(status)
-          })
-
