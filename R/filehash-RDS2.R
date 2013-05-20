@@ -26,16 +26,6 @@ setClass("filehashRDS2",
          contains = "filehashRDS"
          )
 
-setValidity("filehashRDS2",
-            function(object) {
-                    if(length(object@dir) != 1)
-                            return("only one directory should be set in 'dir'")
-                    if(!file.exists(object@dir))
-                            return(gettextf("directory '%s' does not exist",
-                                            object@dir))
-                    TRUE
-            })
-
 createRDS2 <- createRDS
 
 initializeRDS2 <- function(dbName) {
