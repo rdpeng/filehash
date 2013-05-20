@@ -1,7 +1,7 @@
 .onLoad <- function(lib, pkg) {
         assign("defaultType", "DB1", .filehashOptions)
 
-        for(type in c("DB1", "RDS")) {
+        for(type in c("DB1", "RDS", "RDS2")) {
                 cname <- paste("create", type, sep = "")
                 iname <- paste("initialize", type, sep = "")
                 r <- list(create = get(cname, mode = "function"),
