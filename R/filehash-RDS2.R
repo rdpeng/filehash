@@ -22,7 +22,7 @@
 ## Class 'filehashRDS2'
 
 setClass("filehashRDS2",
-         representation(dir = "character"),
+         representation(dir = "character", objects = "character"),
          contains = "filehash"
          )
 
@@ -62,8 +62,20 @@ unMangleName <- function(mname) {
 setGeneric("objectFile", function(db, key) standardGeneric("objectFile"))
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
-                  file.path(db@dir, mangleName(key))
+                  sha1.key <- sha1(key)
+                  # use first two letters of sha1 as subdir (git style)
+                  subdir <- substr(sha1.key,1,2)
+                  file.path(db@dir, subdir, mangleName(key))
           })
+
+# Function to rescan database directory
+setMethod("dbReorganize", "filehashRDS2",
+    function(db, ...) {
+              ## update in memory list of objects in database
+              fileList <- dir(db@dir, recursive=TRUE)
+              db@objects<-structure(fileList,
+                      .Names=unMangleName(basename(fileList)))
+    })
 
 ################################################################################
 ## Interface functions
@@ -71,10 +83,14 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
 setMethod("dbInsert",
           signature(db = "filehashRDS2", key = "character", value = "ANY"),
           function(db, key, value, safe = TRUE, ...) {
-                  writefile <- if(safe)
-                          tempfile()
-                  else
-                          objectFile(db, key)
+                  if(!safe) message("RDS2: Ignoring safe=FALSE")
+                  of <- objectFile(db, key)
+                  od <- dirname(of)
+
+                  # write to temporary file within database directory
+                  # this will be on same filesystem as main database
+                  # allowing file.rename to be used
+                  writefile <- tempfile(pattern='.RDS2tmp',tmpdir=file.path(db@dir))
                   con <- gzfile(writefile, "wb")
 
                   writestatus <- tryCatch({
@@ -86,21 +102,34 @@ setMethod("dbInsert",
                   })
                   if(inherits(writestatus, "condition"))
                           stop(gettextf("unable to write object '%s'", key))
-                  if(!safe)
-                          return(invisible(!inherits(writestatus, "condition")))
+                  
+                  # make the enclosing directory
+                  if(!file.exists(od)) {
+                          mkdirstatus=dir.create(od)
+                          if(!mkdirstatus){
+                                  stop(gettextf("unable to make subdir '%s'", od))
+                          }
+                  }
+                  # now copy the temporary file
+                  cpstatus <- file.rename(writefile, of)
 
-                  cpstatus <- file.copy(writefile, objectFile(db, key),
-                                        overwrite = TRUE)
-
-                  if(!cpstatus)
-                          stop(gettextf("unable to insert object '%s'", key))
-                  else {
+                  if(!cpstatus){
+                          # need to remove temporary file explicitly 
                           rmstatus <- file.remove(writefile)
-
                           if(!rmstatus)
                                   warning("unable to remove temporary file")
+
+                          stop(gettextf("unable to insert object '%s'", key))
                   }
-                  invisible(cpstatus)
+
+                  rval=invisible(cpstatus)
+
+                  # update object list
+                  objlist <- db@objects
+                  # this looks after case when we are re-inserting on same key
+                  objlist[key] <- of
+                  db@objects <- objlist
+                  return(rval)
           })
 
 setMethod("dbFetch", signature(db = "filehashRDS2", key = "character"),
@@ -140,16 +169,15 @@ setMethod("dbExists", signature(db = "filehashRDS2", key = "character"),
 setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
-                  fileList <- dir(db@dir, all.files = TRUE, full.names = TRUE)
-                  use <- !file.info(fileList)$isdir
-                  fileList <- basename(fileList[use])
-
-                  unMangleName(fileList)
+                  names(db@objects)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
           function(db, key, ...) {
                   ofile <- objectFile(db, key)
+                  
+                  # remove the key from the object list
+                  db@objects<-db@objects[names(db@objects)!=key]
 
                   ## remove/delete the file
                   status <- file.remove(ofile)
