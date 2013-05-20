@@ -67,10 +67,10 @@ setMethod("dbInsert",
                   # this will be on same filesystem as main database
                   # allowing file.rename to be used
                   writefile <- tempfile(pattern='.RDS2tmp',tmpdir=file.path(db@dir))
-                  con <- gzfile(writefile, "wb")
+                  con <- file(writefile, "wb")
 
                   writestatus <- tryCatch({
-                          serialize(value, con)
+                          serialize(value, con, xdr=FALSE)
                   }, condition = function(cond) {
                           cond
                   }, finally = {
