@@ -36,20 +36,9 @@ setValidity("filehashRDS2",
                     TRUE
             })
 
-createRDS <- function(dbName) {
-        if(!file.exists(dbName)) {
-                status <- dir.create(dbName)
+createRDS2 <- createRDS
 
-                if(!status)
-                        stop(gettextf("unable to create database directory '%s'",
-                                      dbName))
-        }
-        else
-                message(gettextf("database '%s' already exists", dbName))
-        TRUE
-}
-
-initializeRDS <- function(dbName) {
+initializeRDS2 <- function(dbName) {
         ## Trailing '/' causes a problem in Windows?
         dbName <- sub("/$", "", dbName, perl = TRUE)
         new("filehashRDS2", dir = normalizePath(dbName),
