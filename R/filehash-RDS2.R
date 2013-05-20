@@ -23,7 +23,7 @@
 
 setClass("filehashRDS2",
          representation(dir = "character", objects = "character"),
-         contains = "filehash"
+         contains = "filehashRDS"
          )
 
 setValidity("filehashRDS2",
