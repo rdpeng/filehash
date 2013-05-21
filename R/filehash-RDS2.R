@@ -40,6 +40,9 @@ initializeRDS2 <- function(dbName) {
 ## Function for mapping a key to a path on the filesystem
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
+                  if(dbExists(db,key))
+                        return(get(key,envir=db@objects,inherits=FALSE))
+                                
                   sha1.key <- sha1(key)
                   # use first two letters of sha1 as subdir (git style)
                   subdir <- substr(sha1.key,1,2)
@@ -48,7 +51,7 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
 
 # quick function to scan the database directory
 dbObjList<-function(dbDir){
-        fileList <- dir(dbDir, recursive=TRUE)
+        fileList <- dir(dbDir, recursive=TRUE,full.names=TRUE)
         structure(fileList, .Names=unMangleName(basename(fileList)))
 }
 ################################################################################
@@ -107,6 +110,11 @@ setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
                   ls(envir=db@objects)
+          })
+
+setMethod("dbExists", signature(db = "filehashRDS2", key = "character"),
+          function(db, key, ...) {
+                  exists(key, envir = db@objects, inherits = FALSE)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
