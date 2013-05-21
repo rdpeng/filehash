@@ -57,7 +57,8 @@ dbObjList<-function(dbDir){
 setMethod("dbInsert",
           signature(db = "filehashRDS2", key = "character", value = "ANY"),
           function(db, key, value, safe = TRUE, ...) {
-                  if(!safe) message("RDS2: Ignoring safe=FALSE")
+                  if(!safe)
+                          message("RDS2: Ignoring 'safe = FALSE'")
                   of <- objectFile(db, key)
                   od <- dirname(of)
 
