@@ -48,7 +48,7 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
 
 # quick function to scan the database directory
 dbObjList<-function(dbDir){
-        fileList <- dir(dbDir, recursive=TRUE)
+        fileList <- dir(dbDir, recursive=TRUE,full.names=TRUE)
         structure(fileList, .Names=unMangleName(basename(fileList)))
 }
 ################################################################################
