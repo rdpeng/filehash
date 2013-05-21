@@ -61,7 +61,10 @@ initializeRDS <- function(dbName) {
 ## reverses the operation.
 
 mangleName <- function(oname) {
-        gsub("([A-Z])", "@\\1", oname, perl = TRUE)
+        if(any(grep("@",oname,fixed=TRUE))) 
+                stop("RDS format cannot cope with objects with @ characters",
+                        " in their names")
+        gsub("([A-Z])", "@\\1", oname, perl = TRUE, useBytes = TRUE)
 }
 
 unMangleName <- function(mname) {
