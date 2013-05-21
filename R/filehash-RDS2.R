@@ -109,6 +109,11 @@ setMethod("dbList", "filehashRDS2",
                   ls(envir=db@objects)
           })
 
+setMethod("dbExists", signature(db = "filehashRDS2", key = "character"),
+          function(db, key, ...) {
+                  exists(key, envir = db@objects, inherits = FALSE)
+          })
+
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
           function(db, key, ...) {
                   ofile <- objectFile(db, key)
