@@ -25,6 +25,7 @@ Load test data set:
 
 Some quick tests:
 
+    library(filehash)
     system.time(test1k.rds2<-dumpList(dps1000,'test1k.rds2',type='RDS2'))
     system.time(z<-dbMultiFetch(test1k.rds2,names(dps1000)))
     system.time(test1k.rds<-dumpList(dps1000,'test1k.rds',type='RDS'))
