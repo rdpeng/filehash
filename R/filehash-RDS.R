@@ -166,7 +166,7 @@ setMethod("dbDelete", signature(db = "filehashRDS", key = "character"),
 
                   ## remove/delete the file
                   status <- file.remove(ofile)
-                  invisible(isTRUE(status))
+                  invisible(isTRUE(all(status)))
           })
 
 setMethod("dbUnlink", "filehashRDS",
