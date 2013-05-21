@@ -106,7 +106,7 @@ setMethod("dbInsert",
 setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
-                  ls(db@objects)
+                  ls(envir=db@objects)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
@@ -114,7 +114,7 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
                   ofile <- objectFile(db, key)
                   
                   # remove the key from the object list
-                  rm(list=key,db@objects)
+                  rm(list=key,envir=db@objects)
 
                   ## remove/delete the file
                   status <- file.remove(ofile)
