@@ -40,6 +40,9 @@ initializeRDS2 <- function(dbName) {
 ## Function for mapping a key to a path on the filesystem
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
+                  if(dbExists(db,key))
+                        return(get(key,envir=db@objects,inherits=FALSE))
+                                
                   sha1.key <- sha1(key)
                   # use first two letters of sha1 as subdir (git style)
                   subdir <- substr(sha1.key,1,2)
