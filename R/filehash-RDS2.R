@@ -120,3 +120,8 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
                   status <- file.remove(ofile)
                   invisible(isTRUE(status))
           })
+
+setMethod("length", "filehashRDS2",
+          function(x) {
+                  length(x@objects)
+          })
