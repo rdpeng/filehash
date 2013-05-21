@@ -1,9 +1,5 @@
 # RDS2
 
-## Get the object list updating properly
-
-http://stackoverflow.com/questions/3412942/in-r-how-can-one-make-a-method-of-an-s4-object-that-directly-adjusts-the-values
-
 ## Options
 ### Option Storage
 Should these live an object specific metadata or in filehashOption()?
