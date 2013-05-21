@@ -22,7 +22,7 @@
 ## Class 'filehashRDS2'
 
 setClass("filehashRDS2",
-         representation(dir = "character", objects = "character"),
+         representation(dir = "character", objects = "environment"),
          contains = "filehashRDS"
          )
 
@@ -31,8 +31,10 @@ createRDS2 <- createRDS
 initializeRDS2 <- function(dbName) {
         ## Trailing '/' causes a problem in Windows?
         dbName <- sub("/$", "", dbName, perl = TRUE)
-        new("filehashRDS2", dir = normalizePath(dbName),
-            name = basename(dbName))
+        dbDir <- normalizePath(dbName)
+        objenv <- list2env(as.list(dbObjList(dbDir)),hash=TRUE)
+        new("filehashRDS2", dir = dbDir, name = basename(dbName),
+                objects=objenv)
 }
 
 ## Function for mapping a key to a path on the filesystem
@@ -44,15 +46,11 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
                   file.path(db@dir, subdir, mangleName(key))
           })
 
-# Function to rescan database directory
-setMethod("dbReorganize", "filehashRDS2",
-    function(db, ...) {
-              ## update in memory list of objects in database
-              fileList <- dir(db@dir, recursive=TRUE)
-              db@objects<-structure(fileList,
-                      .Names=unMangleName(basename(fileList)))
-    })
-
+# quick function to scan the database directory
+dbObjList<-function(dbDir){
+        fileList <- dir(dbDir, recursive=TRUE)
+        structure(fileList, .Names=unMangleName(basename(fileList)))
+}
 ################################################################################
 ## Interface functions
 
@@ -101,17 +99,14 @@ setMethod("dbInsert",
                   rval=invisible(cpstatus)
 
                   # update object list
-                  objlist <- db@objects
-                  # this looks after case when we are re-inserting on same key
-                  objlist[key] <- of
-                  db@objects <- objlist
+                  assign(key, of, env=db@objects)
                   return(rval)
           })
 
 setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
-                  names(db@objects)
+                  ls(db@objects)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
@@ -119,7 +114,7 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
                   ofile <- objectFile(db, key)
                   
                   # remove the key from the object list
-                  db@objects<-db@objects[names(db@objects)!=key]
+                  rm(list=key,db@objects)
 
                   ## remove/delete the file
                   status <- file.remove(ofile)
