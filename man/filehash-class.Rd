@@ -3,6 +3,7 @@
 \alias{filehash-class}
 \alias{filehashDB-class}
 \alias{filehashRDS-class}
+\alias{filehashRDS2-class}
 \alias{filehashDB1-class}
 \alias{dbFetch}
 \alias{dbMultiFetch}
@@ -35,6 +36,13 @@
 \alias{dbInsert,filehashRDS,character-method}
 \alias{dbList,filehashRDS-method}
 \alias{dbUnlink,filehashRDS-method}
+\alias{dbDelete,filehashRDS2,character-method}
+\alias{dbExists,filehashRDS2,character-method}
+\alias{dbFetch,filehashRDS2,character-method}
+\alias{dbMultiFetch,filehashRDS2,character-method}
+\alias{dbInsert,filehashRDS2,character-method}
+\alias{dbList,filehashRDS2-method}
+\alias{dbUnlink,filehashRDS2-method}
 \alias{show,filehash-method}
 \alias{with,filehash-method}
 \alias{coerce,filehashDB,filehashRDS-method}
@@ -46,6 +54,7 @@
 \alias{lapply,filehash-method}
 \alias{names,filehash-method}
 \alias{length,filehash-method}
+\alias{length,filehashRDS2-method}
 
 \alias{[,filehash,character,missing,missing-method}
 \alias{[[,filehash,character,missing-method}
