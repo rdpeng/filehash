@@ -22,7 +22,9 @@
 ## Class 'filehashRDS2'
 
 setClass("filehashRDS2",
-         representation(dir = "character", objects = "environment"),
+         representation(dir = "character", objects = "environment",
+         compression = "logical", xdr = "logical"),
+         prototype(compression = FALSE, xdr = FALSE),
          contains = "filehashRDS"
          )
 
@@ -68,10 +70,10 @@ setMethod("dbInsert",
                   # this will be on same filesystem as main database
                   # allowing file.rename to be used
                   writefile <- tempfile(pattern='.RDS2tmp',tmpdir=file.path(db@dir))
-                  con <- file(writefile, "wb")
+                  con <- if(db@compression) gzfile(writefile, "wb") else file(writefile, "wb")
 
                   writestatus <- tryCatch({
-                          serialize(value, con, xdr=FALSE)
+                          serialize(value, con, xdr=db@xdr)
                   }, condition = function(cond) {
                           cond
                   }, finally = {
