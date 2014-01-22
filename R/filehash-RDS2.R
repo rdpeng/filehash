@@ -62,7 +62,8 @@ dbObjList<-function(dbDir){
 setMethod("dbInsert",
           signature(db = "filehashRDS2", key = "character", value = "ANY"),
           function(db, key, value, safe = TRUE, ...) {
-                  if(!safe) message("RDS2: Ignoring safe=FALSE")
+                  if(!safe)
+                          message("RDS2: Ignoring 'safe = FALSE'")
                   of <- objectFile(db, key)
                   od <- dirname(of)
 
@@ -123,12 +124,11 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
           function(db, key, ...) {
                   ofile <- objectFile(db, key)
                   
-                  # remove the key from the object list
-                  rm(list=key,envir=db@objects)
-
-                  ## remove/delete the file
+                  ## remove the key from the object list and delete
+                  ## the file
+                  rm(list = key, envir = db@objects)
                   status <- file.remove(ofile)
-                  invisible(isTRUE(status))
+                  invisible(isTRUE(all(status)))
           })
 
 setMethod("length", "filehashRDS2",
