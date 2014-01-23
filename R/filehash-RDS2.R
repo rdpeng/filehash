@@ -44,7 +44,7 @@ initializeRDS2 <- function(dbName) {
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
                   if(dbExists(db,key))
-                        return(dbValForKey(db@objects,key))
+                        return(dbValForKeys(db@objects,key))
                                 
                   sha1.key <- sha1(key)
                   # use first two letters of sha1 as subdir (git style)
@@ -62,32 +62,26 @@ dbObjListFromDisk<-function(dbDir){
 }
 
 dbNames<-function(e){
-  names(get('objlist',envir=e))
+        names(e$objlist)
 }
 
 dbSetObjList<-function(e, objlist){
-  assign('objlist',as.list(objlist),envir=e)
-  assign('length',length(objlist),envir=e)
+        assign('objlist',as.list(objlist),envir=e)
 }
 
 dbInsertNames<-function(e,names,values){
-  objlist=get('objlist',envir=e)
-  objlist[names]=values
-  assign('objlist', objlist, envir=e)
-  assign('length',length(objlist),envir=e)
+        e$objlist[names]=values
 }
 
 dbRemoveNames<-function(e,names){
-  objlist=get('objlist',envir=e)
-  objlist[names]=NULL
-  assign('objlist', objlist, envir=e)
-  assign('length',length(objlist),envir=e)
+        e$objlist[names]=NULL
 }
 
-dbValForKey<-function(e, key){
-  objlist=get('objlist',envir=e)
-  if(!all(key%in%names(objlist))) stop("bad key")
-  unlist(objlist[key])
+dbValForKeys<-function(e, key){
+        vals=e$objlist[key]
+        nulls=sapply(vals,is.null)
+        if(any(nulls)) stop("some keys are missing!")
+        else unlist(vals)
 }
 
 ################################################################################
@@ -167,5 +161,5 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
 
 setMethod("length", "filehashRDS2",
           function(x) {
-                  get('length',envir=x@objects)
+                  length(x@objects$objlist)
           })
