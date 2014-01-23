@@ -54,7 +54,10 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
 
 # quick function to scan the database directory
 dbObjListFromDisk<-function(dbDir){
-        fileList <- dir(dbDir, recursive=TRUE,full.names=TRUE)
+        subdirs <- dir(dbDir,full.names=T)
+        # note use of unlist in case there are any empty directories
+        fileList <- unlist(sapply(subdirs,dir,full.names=T))
+        if(!length(fileList)) return(NULL)
         structure(fileList, .Names=unMangleName(basename(fileList)))
 }
 
