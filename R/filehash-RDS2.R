@@ -34,7 +34,8 @@ initializeRDS2 <- function(dbName) {
         ## Trailing '/' causes a problem in Windows?
         dbName <- sub("/$", "", dbName, perl = TRUE)
         dbDir <- normalizePath(dbName)
-        objenv <- list2env(as.list(dbObjList(dbDir)),hash=TRUE)
+        objenv <- new.env()
+        dbSetObjList(objenv, dbObjListFromDisk(dbDir))
         new("filehashRDS2", dir = dbDir, name = basename(dbName),
                 objects=objenv)
 }
@@ -43,7 +44,7 @@ initializeRDS2 <- function(dbName) {
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
                   if(dbExists(db,key))
-                        return(get(key,envir=db@objects,inherits=FALSE))
+                        return(dbValForKey(db@objects,key))
                                 
                   sha1.key <- sha1(key)
                   # use first two letters of sha1 as subdir (git style)
@@ -52,10 +53,40 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           })
 
 # quick function to scan the database directory
-dbObjList<-function(dbDir){
+dbObjListFromDisk<-function(dbDir){
         fileList <- dir(dbDir, recursive=TRUE,full.names=TRUE)
         structure(fileList, .Names=unMangleName(basename(fileList)))
 }
+
+dbNames<-function(e){
+  names(get('objlist',envir=e))
+}
+
+dbSetObjList<-function(e, objlist){
+  assign('objlist',as.list(objlist),envir=e)
+  assign('length',length(objlist),envir=e)
+}
+
+dbInsertNames<-function(e,names,values){
+  objlist=get('objlist',envir=e)
+  objlist[names]=values
+  assign('objlist', objlist, envir=e)
+  assign('length',length(objlist),envir=e)
+}
+
+dbRemoveNames<-function(e,names){
+  objlist=get('objlist',envir=e)
+  objlist[names]=NULL
+  assign('objlist', objlist, envir=e)
+  assign('length',length(objlist),envir=e)
+}
+
+dbValForKey<-function(e, key){
+  objlist=get('objlist',envir=e)
+  if(!all(key%in%names(objlist))) stop("bad key")
+  unlist(objlist[key])
+}
+
 ################################################################################
 ## Interface functions
 
@@ -105,19 +136,19 @@ setMethod("dbInsert",
                   rval=invisible(cpstatus)
 
                   # update object list
-                  assign(key, of, env=db@objects)
+                  dbInsertNames(db@objects,key, of)
                   return(rval)
           })
 
 setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
-                  ls(envir=db@objects)
+                  dbNames(db@objects)
           })
 
 setMethod("dbExists", signature(db = "filehashRDS2", key = "character"),
           function(db, key, ...) {
-                  exists(key, envir = db@objects, inherits = FALSE)
+                  key%in%dbNames(db@objects)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
@@ -126,12 +157,12 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
                   
                   ## remove the key from the object list and delete
                   ## the file
-                  rm(list = key, envir = db@objects)
+                  dbRemoveNames(db@objects, key)
                   status <- file.remove(ofile)
                   invisible(isTRUE(all(status)))
           })
 
 setMethod("length", "filehashRDS2",
           function(x) {
-                  length(x@objects)
+                  get('length',envir=x@objects)
           })
