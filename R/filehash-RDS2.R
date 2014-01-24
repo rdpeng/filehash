@@ -22,7 +22,9 @@
 ## Class 'filehashRDS2'
 
 setClass("filehashRDS2",
-         representation(dir = "character", objects = "environment"),
+         representation(dir = "character", objects = "environment",
+         compression = "logical", xdr = "logical"),
+         prototype(compression = FALSE, xdr = FALSE),
          contains = "filehashRDS"
          )
 
@@ -32,7 +34,8 @@ initializeRDS2 <- function(dbName) {
         ## Trailing '/' causes a problem in Windows?
         dbName <- sub("/$", "", dbName, perl = TRUE)
         dbDir <- normalizePath(dbName)
-        objenv <- list2env(as.list(dbObjList(dbDir)),hash=TRUE)
+        objenv <- new.env()
+        dbSetObjList(objenv, dbObjListFromDisk(dbDir))
         new("filehashRDS2", dir = dbDir, name = basename(dbName),
                 objects=objenv)
 }
@@ -41,7 +44,7 @@ initializeRDS2 <- function(dbName) {
 setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           function(db, key) {
                   if(dbExists(db,key))
-                        return(get(key,envir=db@objects,inherits=FALSE))
+                        return(dbValForKeys(db@objects,key))
                                 
                   sha1.key <- sha1(key)
                   # use first two letters of sha1 as subdir (git style)
@@ -50,10 +53,37 @@ setMethod("objectFile", signature(db = "filehashRDS2", key = "character"),
           })
 
 # quick function to scan the database directory
-dbObjList<-function(dbDir){
-        fileList <- dir(dbDir, recursive=TRUE,full.names=TRUE)
+dbObjListFromDisk<-function(dbDir){
+        subdirs <- dir(dbDir,full.names=T)
+        # note use of unlist in case there are any empty directories
+        fileList <- unlist(sapply(subdirs,dir,full.names=T))
+        if(!length(fileList)) return(NULL)
         structure(fileList, .Names=unMangleName(basename(fileList)))
 }
+
+dbNames<-function(e){
+        names(e$objlist)
+}
+
+dbSetObjList<-function(e, objlist){
+        assign('objlist',as.list(objlist),envir=e)
+}
+
+dbInsertNames<-function(e,names,values){
+        e$objlist[names]=values
+}
+
+dbRemoveNames<-function(e,names){
+        e$objlist[names]=NULL
+}
+
+dbValForKeys<-function(e, key){
+        vals=e$objlist[key]
+        nulls=sapply(vals,is.null)
+        if(any(nulls)) stop("some keys are missing!")
+        else unlist(vals)
+}
+
 ################################################################################
 ## Interface functions
 
@@ -69,10 +99,10 @@ setMethod("dbInsert",
                   # this will be on same filesystem as main database
                   # allowing file.rename to be used
                   writefile <- tempfile(pattern='.RDS2tmp',tmpdir=file.path(db@dir))
-                  con <- file(writefile, "wb")
+                  con <- if(db@compression) gzfile(writefile, "wb") else file(writefile, "wb")
 
                   writestatus <- tryCatch({
-                          serialize(value, con, xdr=FALSE)
+                          serialize(value, con, xdr=db@xdr)
                   }, condition = function(cond) {
                           cond
                   }, finally = {
@@ -103,19 +133,19 @@ setMethod("dbInsert",
                   rval=invisible(cpstatus)
 
                   # update object list
-                  assign(key, of, env=db@objects)
+                  dbInsertNames(db@objects,key, of)
                   return(rval)
           })
 
 setMethod("dbList", "filehashRDS2",
           function(db, ...) {
                   ## list all keys/files in the database
-                  ls(envir=db@objects)
+                  dbNames(db@objects)
           })
 
 setMethod("dbExists", signature(db = "filehashRDS2", key = "character"),
           function(db, key, ...) {
-                  exists(key, envir = db@objects, inherits = FALSE)
+                  key%in%dbNames(db@objects)
           })
 
 setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
@@ -124,12 +154,12 @@ setMethod("dbDelete", signature(db = "filehashRDS2", key = "character"),
                   
                   ## remove the key from the object list and delete
                   ## the file
-                  rm(list = key, envir = db@objects)
+                  dbRemoveNames(db@objects, key)
                   status <- file.remove(ofile)
                   invisible(isTRUE(all(status)))
           })
 
 setMethod("length", "filehashRDS2",
           function(x) {
-                  length(x@objects)
+                  length(x@objects$objlist)
           })
