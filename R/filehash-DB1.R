@@ -183,15 +183,17 @@ setMethod("lockFile", "file", function(db, ...) {
 })
 
 createLockFile <- function(name) {
+        # TODO: are these optimal values for max.attempts and sleep.duration?
         max.attempts <- 4
-        attempts = 0
-        status = -1
+        sleep.duration <- 0.5
+        attempts <- 0
+        status <- -1
         while ( (attempts <= max.attempts) && ! isTRUE(status >= 0)) {
           attempts <- attempts + 1
           status <- .Call("lock_file", name)
 
          if(!isTRUE(status >= 0)) {
-           Sys.sleep(0.5)
+           Sys.sleep(sleep.duration)
          }
         }
         if (! isTRUE(status >= 0))
