@@ -183,16 +183,25 @@ setMethod("lockFile", "file", function(db, ...) {
 })
 
 createLockFile <- function(name) {
-        status <- .Call("lock_file", name)
+        max.attempts <- 4
+        attempts = 0
+        status = -1
+        while ( (attempts <= max.attempts) && ! isTRUE(status >= 0)) {
+          attempts <- attempts + 1
+          status <- .Call("lock_file", name)
 
-        if(!isTRUE(status >= 0))
-                stop("cannot create lock file")
+         if(!isTRUE(status >= 0)) {
+           Sys.sleep(0.5)
+         }
+        }
+        if (! isTRUE(status >= 0))
+          stop(paste('cannot create lock file "',name,'"', sep=''))
         TRUE
 }
 
 deleteLockFile <- function(name) {
         if(!file.remove(name))
-                stop("cannot remove lock file")
+                stop(paste('cannot remove lock file "', name, '"', sep=''))
         TRUE
 }
 
