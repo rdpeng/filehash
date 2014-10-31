@@ -120,20 +120,24 @@ setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   ## Create filename from key
                   ofile <- objectFile(db, key)
-
                   ## Open connection
-                  con <- tryCatch({
-                          gzfile(ofile, "rb")
+                  val <- tryCatch({
+                          con<-gzfile(ofile)
+                          # note it is necessary to split creating and opening
+                          # the connection into two steps so that the connection
+                          # can be closed/destroyed successfully if ofile does 
+                          # not exist (avoiding connection leaks).
+                          open(con,"rb")
+                          ## Read data
+                          unserialize(con)
                   }, condition = function(cond) {
                           cond
+                  }, finally = {
+                          close(con)
                   })
-                  if(inherits(con, "condition")) 
+                  if(inherits(val, "condition")) 
                           stop(gettextf("unable to obtain value for key '%s'",
                                         key))
-                  on.exit(close(con))
-
-                  ## Read data
-                  val <- unserialize(con)
                   val
           })
 
