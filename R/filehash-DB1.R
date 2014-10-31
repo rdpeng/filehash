@@ -183,21 +183,25 @@ setMethod("lockFile", "file", function(db, ...) {
 })
 
 createLockFile <- function(name) {
-        # TODO: are these optimal values for max.attempts and sleep.duration?
-        max.attempts <- 4
-        sleep.duration <- 0.5
-        attempts <- 0
-        status <- -1
-        while ( (attempts <= max.attempts) && ! isTRUE(status >= 0)) {
-          attempts <- attempts + 1
-          status <- .Call("lock_file", name)
+        if(.Platform$OS.type != "windows") 
+                status <- .Call("lock_file", name)
+        else {
+                ## TODO: are these optimal values for max.attempts
+                ## and sleep.duration?
+                max.attempts <- 4
+                sleep.duration <- 0.5
+                attempts <- 0
+                status <- -1
+                while ((attempts <= max.attempts) && ! isTRUE(status >= 0)) {
+                        attempts <- attempts + 1
+                        status <- .Call("lock_file", name)
 
-         if(!isTRUE(status >= 0)) {
-           Sys.sleep(sleep.duration)
-         }
+                        if(!isTRUE(status >= 0))
+                                Sys.sleep(sleep.duration)
+                }
         }
-        if (! isTRUE(status >= 0))
-          stop(paste('cannot create lock file "',name,'"', sep=''))
+        if(!isTRUE(status >= 0))
+                stop("cannot create lock file ", sQuote(name))
         TRUE
 }
 
