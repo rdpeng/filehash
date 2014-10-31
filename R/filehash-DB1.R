@@ -183,16 +183,27 @@ setMethod("lockFile", "file", function(db, ...) {
 })
 
 createLockFile <- function(name) {
-        status <- .Call("lock_file", name)
+        # TODO: are these optimal values for max.attempts and sleep.duration?
+        max.attempts <- 4
+        sleep.duration <- 0.5
+        attempts <- 0
+        status <- -1
+        while ( (attempts <= max.attempts) && ! isTRUE(status >= 0)) {
+          attempts <- attempts + 1
+          status <- .Call("lock_file", name)
 
-        if(!isTRUE(status >= 0))
-                stop("cannot create lock file")
+         if(!isTRUE(status >= 0)) {
+           Sys.sleep(sleep.duration)
+         }
+        }
+        if (! isTRUE(status >= 0))
+          stop(paste('cannot create lock file "',name,'"', sep=''))
         TRUE
 }
 
 deleteLockFile <- function(name) {
         if(!file.remove(name))
-                stop("cannot remove lock file")
+                stop(paste('cannot remove lock file "', name, '"', sep=''))
         TRUE
 }
 
