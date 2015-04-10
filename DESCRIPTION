@@ -1,11 +1,13 @@
-Package:  filehash
-Version:  2.2-2
-Date:  2013-12-16
-Depends:  R (>= 3.0.0), methods
-Collate:  filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R hash.R queue.R stack.R zzz.R
-Title:  Simple key-value database
-Author:  Roger D. Peng <rpeng@jhsph.edu>
-Maintainer:  Roger D. Peng <rpeng@jhsph.edu>
-Description:  Simple key-value database
-License:  GPL (>= 2)
+Package: filehash
+Version: 2.3
+Date: 2015-04-10
+Depends: R (>= 3.0.0), methods
+Collate: filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R
+        hash.R queue.R stack.R zzz.R
+Title: Simple key-value database
+Author: Roger D. Peng <rpeng@jhsph.edu>
+Maintainer: Roger D. Peng <rpeng@jhsph.edu>
+Description: Simple key-value database
+License: GPL (>= 2)
 URL: http://github.com/rdpeng/filehash
+Packaged: 2015-04-10 14:24:08 UTC; rdpeng
