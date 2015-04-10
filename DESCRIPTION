@@ -4,10 +4,10 @@ Date: 2015-04-10
 Depends: R (>= 3.0.0), methods
 Collate: filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R
         hash.R queue.R stack.R zzz.R
-Title: Simple key-value database
+Title: Simple Key-Value Database
 Author: Roger D. Peng <rdpeng@jhu.edu>
 Maintainer: Roger D. Peng <rdpeng@jhu.edu>
-Description: Simple key-value database
+Description: Simple Key-Value Database
 License: GPL (>= 2)
 URL: http://github.com/rdpeng/filehash
 Packaged: 2015-04-10 14:24:08 UTC; rdpeng
