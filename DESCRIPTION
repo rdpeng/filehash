@@ -1,4 +1,5 @@
 Package: filehash
+Date: 2015-08-12
 Version: 2.3
 Depends: R (>= 3.0.0), methods
 Collate: filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R
