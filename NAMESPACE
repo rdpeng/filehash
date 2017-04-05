@@ -1,4 +1,4 @@
-useDynLib(filehash)
+useDynLib(filehash, .registration = TRUE, .fixes = "C_")
 import(methods)
 
 ## Classes

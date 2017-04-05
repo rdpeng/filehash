@@ -108,7 +108,7 @@ readKeyMap <- function(con, map = NULL, pos = 0) {
 
         if(pos > filesize)
                 stop("'pos' cannot be greater than file size")
-        .Call("read_key_map", filename, map, filesize, pos)
+        .Call(C_read_key_map, filename, map, filesize, pos)
 }
 
 readSingleKey <- function(con, map, key) {
@@ -184,7 +184,7 @@ setMethod("lockFile", "file", function(db, ...) {
 
 createLockFile <- function(name) {
         if(.Platform$OS.type != "windows") 
-                status <- .Call("lock_file", name)
+                status <- .Call(C_lock_file, name)
         else {
                 ## TODO: are these optimal values for max.attempts
                 ## and sleep.duration?
@@ -194,7 +194,7 @@ createLockFile <- function(name) {
                 status <- -1
                 while ((attempts <= max.attempts) && ! isTRUE(status >= 0)) {
                         attempts <- attempts + 1
-                        status <- .Call("lock_file", name)
+                        status <- .Call(C_lock_file, name)
 
                         if(!isTRUE(status >= 0))
                                 Sys.sleep(sleep.duration)
