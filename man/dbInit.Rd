@@ -4,8 +4,6 @@
 \alias{dbCreate}
 \alias{dbCreate,ANY-method}
 \alias{dbInit,ANY-method}
-\alias{dbReconnect}
-\alias{dbReconnect,filehashDB1-method}
 
 %\alias{dbInitialize}
 
@@ -16,11 +14,9 @@
 \usage{
 dbCreate(db, ...)
 dbInit(db, ...)
-dbReconnect(db, ...)
 
 \S4method{dbCreate}{ANY}(db, type = NULL, ...)
 \S4method{dbInit}{ANY}(db, type = NULL, ...)
-\S4method{dbReconnect}{filehashDB1}(db, ...)
 }
 
 \arguments{
