@@ -102,16 +102,16 @@ db$a <- rnorm(100)
 db$b <- runif(1000)
 
 dbLoad(db)  ## 'a', 'b'
-summary(a)
-summary(b)
+summary(a, digits = 4)
+summary(b, digits = 4)
 
 rm(list = ls())
 db <- dbInit("testLoadingDB", "DB1")
 
 dbLazyLoad(db)
 
-summary(a)
-summary(b)
+summary(a, digits = 4)
+summary(b, digits = 4)
 
 
 
@@ -135,8 +135,8 @@ dbInsert(db, "c", runif(1000))
 dbInsert(db, "c", runif(1000))
 dbInsert(db, "c", runif(1000))
 
-summary(db$b)
-summary(db$c)
+summary(db$b, digits = 4)
+summary(db$c, digits = 4)
 
 print(file.info(db@datafile)$size)
 
@@ -146,8 +146,8 @@ db <- dbInit("test_reorg", "DB1")
 
 print(file.info(db@datafile)$size)
 
-summary(db$b)
-summary(db$c)
+summary(db$b, digits = 4)
+summary(db$c, digits = 4)
 
 
 ################################################################################
