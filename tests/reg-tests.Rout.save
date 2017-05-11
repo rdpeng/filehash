@@ -191,10 +191,10 @@ Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
 > db$b <- runif(1000)
 > 
 > dbLoad(db)  ## 'a', 'b'
-> summary(a)
+> summary(a, digits = 4)
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 -3.036000 -0.642100  0.172000  0.004131  0.614100  2.107000 
-> summary(b)
+> summary(b, digits = 4)
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 0.004583 0.229900 0.478600 0.482200 0.729200 0.999800 
 > 
@@ -203,10 +203,10 @@ Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
 > 
 > dbLazyLoad(db)
 > 
-> summary(a)
+> summary(a, digits = 4)
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 -3.036000 -0.642100  0.172000  0.004131  0.614100  2.107000 
-> summary(b)
+> summary(b, digits = 4)
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 0.004583 0.229900 0.478600 0.482200 0.729200 0.999800 
 > 
@@ -233,10 +233,10 @@ Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
 > dbInsert(db, "c", runif(1000))
 > dbInsert(db, "c", runif(1000))
 > 
-> summary(db$b)
+> summary(db$b, digits = 4)
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 -2.76800 -0.65520 -0.06100 -0.01269  0.65240  3.73900 
-> summary(db$c)
+> summary(db$c, digits = 4)
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 0.0002346 0.2416000 0.4813000 0.4938000 0.7492000 0.9992000 
 > 
@@ -244,7 +244,7 @@ Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
 [1] 64980
 > 
 > dbReorganize(db)
-Reorganizing database: 33% (1/3)67% (2/3)100% (3/3)
+Reorganizing database: 100% (3/3)
 Finished; reload database with 'dbInit'
 [1] TRUE
 > 
@@ -253,10 +253,10 @@ Finished; reload database with 'dbInit'
 > print(file.info(db@datafile)$size)
 [1] 16245
 > 
-> summary(db$b)
+> summary(db$b, digits = 4)
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 -2.76800 -0.65520 -0.06100 -0.01269  0.65240  3.73900 
-> summary(db$c)
+> summary(db$c, digits = 4)
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 0.0002346 0.2416000 0.4813000 0.4938000 0.7492000 0.9992000 
 > 
