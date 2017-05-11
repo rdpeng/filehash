@@ -8,7 +8,7 @@ citEntry(entry = "article",
 	 volume = "6",
          number = "4",
          pages = "19--24",
-	 url = "http://CRAN.R-project.org/doc/Rnews/",
+	 url = "https://cran.r-project.org/doc/Rnews/",
          textVersion = paste("Peng RD (2006).", dQuote("Interacting with data using the filehash package,"), "R News, 6 (4), 19--24.")
          )
 
