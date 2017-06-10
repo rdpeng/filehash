@@ -427,7 +427,7 @@ programming setting and an interactive setting.  Its main purpose is
 to allow for simpler interaction with large datasets where
 simultaneous access to the full dataset is not needed.  While the
 package may not be optimal for all settings, one goal was to write a
-simple package in pure R that users to could install with minimal
+simple package in pure R that users could install with minimal
 overhead.  In the future I hope to add functionality for interacting
 with databases stored on remote computers and perhaps incorporate a
 ``real'' database backend.  Some work has already begun on developing
