@@ -33,15 +33,16 @@ createThor <- function(dbName) {
                 message(gettextf("database '%s' already exists", dbName))
                 return(TRUE)
         }
-        invisible(mdb_env(dbName))
+        invisible(mdb_env(dbName, create = TRUE, subdir = FALSE))
 }
 
 initializeThor <- function(dbName) {
         if(!require(thor))
                 stop("the 'thor' package is required to initialize a database in this format")
         dbName <- normalizePath(dbName)
+        object <- mdb_env(dbName, create = FALSE, subdir = FALSE)
         new("filehashThor", 
-            object = mdb_env(dbName), 
+            object = object, 
             path = dbName,
             name = basename(dbName))
 }
@@ -53,7 +54,7 @@ initializeThor <- function(dbName) {
 setMethod("dbInsert",
           signature(db = "filehashThor", key = "character", value = "ANY"),
           function(db, key, value, ...) {
-                  txn <- db$object$begin(write = TRUE)
+                  txn <- db@object$begin(write = TRUE)
                   tryCatch({
                           value_raw <- serialize(value, NULL)
                           txn$put(key, value_raw)
@@ -69,23 +70,24 @@ setMethod("dbInsert",
 setMethod("dbFetch",
           signature(db = "filehashThor", key = "character"),
           function(db, key, ...) {
-                  txn <- db$object$begin(write = FALSE)
+                  txn <- db@object$begin(write = FALSE)
                   tryCatch({
                           value_raw <- txn$get(key)
-                          object <- unserialize(value_raw)
+                          obj <- unserialize(value_raw)
                   }, error = function(e) {
                           txn$abort()
                           stop(e)
                   }, finally = {
                           txn$commit()
                   })
-                  object
+                  obj
           })
 
+        
 setMethod("dbList",
           signature(db = "filehashThor"),
           function(db, key, ...) {
-                  txn <- db$object$begin(write = FALSE)
+                  txn <- db@object$begin(write = FALSE)
                   tryCatch({
                           keys <- txn$list()
                   }, error = function(e) {
