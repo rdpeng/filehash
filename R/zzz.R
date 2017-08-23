@@ -8,6 +8,9 @@
                           initialize = get(iname, mode="function"))
                 assign(type, r, .filehashFormats)
         }
+        registerFormatDB("Thor", 
+                         list(create = createThor, 
+                              initialize = initializeThor))
 }
 
 .onAttach <- function(lib, pkg) {

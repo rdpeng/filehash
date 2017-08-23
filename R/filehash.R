@@ -74,18 +74,18 @@ filehashFormats <- function(...) {
 ## condition, return FALSE.
 
 dbStartup <- function(dbName, type, action = c("initialize", "create")) {
-    action <- match.arg(action)
-    validFormat <- type %in% names(filehashFormats())
-    
-    if(!validFormat) 
-        stop(gettextf("'%s' not a valid database format", type))
-    formatList <- filehashFormats()[[type]]
-    doFUN <- formatList[[action]]
-
-    if(!is.function(doFUN))
-        stop(gettextf("'%s' function for database format '%s' is not valid",
-                      action, type))
-    doFUN(dbName)
+        action <- match.arg(action)
+        validFormat <- type %in% names(filehashFormats())
+        
+        if(!validFormat) 
+                stop(gettextf("'%s' not a valid database format", type))
+        formatList <- filehashFormats()[[type]]
+        doFUN <- formatList[[action]]
+        
+        if(!is.function(doFUN))
+                stop(gettextf("'%s' function for database format '%s' is not valid",
+                              action, type))
+        doFUN(dbName)
 }    
 
 setGeneric("dbCreate", function(db, ...) standardGeneric("dbCreate"))

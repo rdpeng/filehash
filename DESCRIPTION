@@ -1,7 +1,7 @@
 Package: filehash
-Version: 2.4-1
-Depends: R (>= 3.0.0), methods
-Collate: filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R
+Version: 2.5
+Depends: R (>= 3.2.0), methods
+Collate: filehash.R filehash-DB1.R filehash-RDS.R filehash-thor.R coerce.R dump.R
         hash.R queue.R stack.R zzz.R
 Title: Simple Key-Value Database
 Author: Roger D. Peng <rdpeng@jhu.edu>
@@ -14,4 +14,5 @@ Description: Implements a simple key-value style database where character string
   database are currently available and new formats can easily be incorporated by third parties for use in the
   'filehash' framework.
 License: GPL (>= 2)
+Suggests: thor
 URL: http://github.com/rdpeng/filehash
