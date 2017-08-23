@@ -26,6 +26,8 @@ setClass("filehashThor",
 #####################################################################
 ## Helpers
 
+## NOTE: Need to allow create/initialize to pass options
+
 createThor <- function(dbName) {
         if(!require(thor))
                 stop("the 'thor package is required to create a database in this format")
@@ -33,14 +35,16 @@ createThor <- function(dbName) {
                 message(gettextf("database '%s' already exists", dbName))
                 return(TRUE)
         }
-        invisible(mdb_env(dbName, create = TRUE, subdir = FALSE))
+        db <- mdb_env(dbName, create = TRUE, subdir = FALSE)
+        invisible(db)
 }
 
 initializeThor <- function(dbName) {
         if(!require(thor))
                 stop("the 'thor' package is required to initialize a database in this format")
         dbName <- normalizePath(dbName)
-        object <- mdb_env(dbName, create = FALSE, subdir = FALSE)
+        object <- mdb_env(dbName, create = FALSE, subdir = FALSE,
+                          mapsize = as.integer(2^20 * 10L))
         new("filehashThor", 
             object = object, 
             path = dbName,
@@ -100,11 +104,55 @@ setMethod("dbList",
           })
 
 
+setMethod("dbExists",
+          signature(db = "filehashThor",
+                    key = "character"),
+          function(db, key, ...) {
+                  txn <- db@object$begin(write = FALSE)
+                  tryCatch({
+                          status <- db@object$exists(key)
+                  }, error = function(e) {
+                          txn$abort()
+                          stop(e)
+                  }, finally = {
+                          txn$commit()
+                  })
+                  status
+          })
+
+setMethod("dbDelete",
+          signature(db = "filehashThor",
+                    key = "character"),
+          function(db, key, ...) {
+                  txn <- db@object$begin(write = TRUE)
+                  tryCatch({
+                          txn$del(key)
+                  }, error = function(e) {
+                          txn$abort()
+                          stop(e)
+                  }, finally = {
+                          txn$commit()
+                  })
+                  invisible(NULL)        
+          })
 
 
-
-
-
+setMethod("dbMultiFetch",
+          signature(db = "filehashThor",
+                    key = "character"),
+          function(db, key, ...) {
+                  txn <- db@object$begin(write = FALSE)
+                  tryCatch({
+                          vals <- lapply(txn$mget(key), unserialize)                        
+                          names(vals) <- key
+                  }, error = function(e) {
+                          txn$abort()
+                          stop(e)
+                  }, finally = {
+                          txn$commit()
+                  })
+                  vals
+          })
 
 
 
