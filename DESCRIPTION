@@ -14,4 +14,4 @@ Description: Implements a simple key-value style database where character string
   database are currently available and new formats can easily be incorporated by third parties for use in the
   'filehash' framework.
 License: GPL (>= 2)
-URL: http://github.com/rdpeng/filehash
+URL: https://github.com/rdpeng/filehash
