@@ -91,6 +91,8 @@ dbLazyLoad(db, env)
 ls(env)
 
 as(db, "list")
+
+dbUnlink(db)
 }
 
 \keyword{database}

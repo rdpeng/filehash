@@ -58,8 +58,12 @@ db <- dumpDF(data, dbName = "dataframe.dump")
 fit <- with(db, lm(y ~ x + z))
 summary(fit)
 
+dbUnlink(db)
+
 db <- dumpList(list(a = 1, b = 2, c = 3), "list.dump")
 db$a
+
+dbUnlink(db)
 }
 \keyword{database}% at least one, from doc/KEYWORDS
 

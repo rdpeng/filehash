@@ -146,5 +146,7 @@ dbDelete(db, "a")
 dbList(db) ## "b"
 
 with(db, mean(b))
+
+dbUnlink(db)
 }
 \keyword{classes}
