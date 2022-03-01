@@ -2,7 +2,7 @@ citHeader("The reference for the 'filehash' package is:")
 
 citEntry(entry = "article",
          title = "Interacting with data using the filehash package",
-         author = personList(person("Roger", "Peng", "D.")),
+         author = personList(person(given = "Roger D.", family = "Peng")),
 	 journal = "R News",
          year = "2006",
 	 volume = "6",
