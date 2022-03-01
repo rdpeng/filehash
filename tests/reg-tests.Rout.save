@@ -1,7 +1,7 @@
 
-R version 3.5.2 Patched (2019-01-10 r75975) -- "Eggshell Igloo"
-Copyright (C) 2019 The R Foundation for Statistical Computing
-Platform: x86_64-apple-darwin18.2.0 (64-bit)
+R version 4.1.2 Patched (2022-01-20 r81529) -- "Bird Hippie"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin21.2.0 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -241,7 +241,7 @@ Error in readSingleKey(con, map, key): unable to obtain value for key 'c'
 0.0002346 0.2416000 0.4813000 0.4938000 0.7492000 0.9992000 
 > 
 > print(file.info(db@datafile)$size)
-[1] 64980
+[1] 65304
 > 
 > dbReorganize(db)
 Reorganizing database: 33% (1/3)67% (2/3)100% (3/3)
@@ -251,7 +251,7 @@ Finished; reload database with 'dbInit'
 > db <- dbInit("test_reorg", "DB1")
 > 
 > print(file.info(db@datafile)$size)
-[1] 16245
+[1] 16326
 > 
 > summary(db$b, digits = 4)
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
@@ -304,4 +304,4 @@ Finished; reload database with 'dbInit'
 > 
 > proc.time()
    user  system elapsed 
-  0.217   0.054   0.263 
+  0.215   0.064   0.269 
