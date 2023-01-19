@@ -1,6 +1,7 @@
 Package: filehash
-Version: 2.4-3
+Version: 2.4-4
 Depends: R (>= 3.0.0), methods
+Imports: digest
 Collate: filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R
         hash.R queue.R stack.R zzz.R
 Title: Simple Key-Value Database

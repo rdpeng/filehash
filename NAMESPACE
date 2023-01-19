@@ -1,5 +1,6 @@
 useDynLib(filehash, .registration = TRUE, .fixes = "C_")
 import(methods)
+importFrom(digest, digest)
 
 ## Classes
 exportClasses(
