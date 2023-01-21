@@ -20,6 +20,9 @@
 ######################################################################
 ## Class 'filehash'
 
+#' Filehash Class
+#' 
+#' @exportClass filehash
 setClass("filehash", representation(name = "character"))
 
 setValidity("filehash", function(object) {
@@ -30,8 +33,11 @@ setValidity("filehash", function(object) {
 })
 
 setGeneric("dbName", function(db) standardGeneric("dbName"))
+
+#' @exportMethod dbName
 setMethod("dbName", "filehash", function(db) db@name)
 
+#' @exportMethod show
 setMethod("show", "filehash",
           function(object) {
               if(length(object@name) == 0)
@@ -43,6 +49,11 @@ setMethod("show", "filehash",
 
 ######################################################################
 
+#' Register Database Format
+#' 
+#' @param name character, name of database format
+#' @param funlist list of functions for creating and initializing a database format
+#' @export
 registerFormatDB <- function(name, funlist) {
     if(!all(c("initialize", "create") %in% names(funlist)))
         stop("need both 'initialize' and 'create' functions in 'funlist'")
@@ -53,6 +64,15 @@ registerFormatDB <- function(name, funlist) {
     TRUE
 }
 
+#' List and register filehash formats
+#' 
+#' List and register filehash backend database formats.
+#'
+#' @param \dots list of functions for registering a new database format
+#' 
+#' @details \code{filehashFormats} can be used to register new filehash backend database formats.  \code{filehashFormats} called with no arguments lists information on available formats
+#' @return A list containing information on the available filehash formats
+#' @export
 filehashFormats <- function(...) {
     args <- list(...)
     n <- names(args)
@@ -90,6 +110,7 @@ dbStartup <- function(dbName, type, action = c("initialize", "create")) {
 
 setGeneric("dbCreate", function(db, ...) standardGeneric("dbCreate"))
 
+#' @exportMethod dbCreate
 setMethod("dbCreate", "ANY",
           function(db, type = NULL, ...) {
               if(is.null(type))
@@ -100,6 +121,7 @@ setMethod("dbCreate", "ANY",
           
 setGeneric("dbInit", function(db, ...) standardGeneric("dbInit"))
 
+#' @exportMethod dbInit
 setMethod("dbInit", "ANY",
           function(db, type = NULL, ...) {
               if(is.null(type))
@@ -110,6 +132,15 @@ setMethod("dbInit", "ANY",
 ######################################################################
 ## Set options and retrieve list of options
 
+#' Set Filehash Options
+#' 
+#' Set global filehash options
+#' 
+#' @param \dots name-value pairs for options
+#' @details Currently, the only option that can be set is the default database type (\code{defaultType}) which can be "DB1", "RDS" or "DB". 
+#' @return \code{filehashOptions} returns a list of current settings for all options.
+#' 
+#' @export
 filehashOption <- function(...) {
     args <- list(...)
     n <- names(args)
@@ -127,8 +158,26 @@ filehashOption <- function(...) {
 ######################################################################
 ## Load active bindings into an environment
 
+#' Load a Database
+#' 
+#' Load entire database into an environment
+#' 
+#' @param db filehash database object
+#' 
+#' @details \code{dbLoad} loads objects in the database directly into the 
+#' environment specified, like \code{load} does except with active bindings. 
+#' \code{dbLoad} takes a second argument \code{env}, which is an 
+#' environment, and the default for \code{env} is \code{parent.frame()}. 
+#' 
+#' @details The use of \code{makeActiveBinding} in \code{db2env} and 
+#' \code{dbLoad} allows for potentially large databases to, at least 
+#' conceptually, be used in R, as long as you don't need simultaneous access to 
+#' all of the elements in the database.
+#' 
+#' @return a character vector containing the names of loaded objects
 setGeneric("dbLoad", function(db, ...) standardGeneric("dbLoad"))
 
+#' @exportMethod dbLoad
 setMethod("dbLoad", "filehash",
           function(db, env = parent.frame(2), keys = NULL, ...) {
               if(is.null(keys))
@@ -161,8 +210,32 @@ setMethod("dbLoad", "filehash",
               invisible(keys)
           })
 
+#' Lazy Load a Database
+#' 
+#' Lazy load a filehash database
+#' 
+#' @param db a filehash database object
+#' 
+#' @details \code{dbLazyLoad} loads objects in the database directly into the
+#' environment specified, like \code{load} does except with promises. 
+#' \code{dbLazyLoad} takes a second argument \code{env}, which is an 
+#' environment, and the default for \code{env} is \code{parent.frame()}. 
+
+#' @details  With \code{dbLazyLoad} database objects are "lazy-loaded" into 
+#' the environment. Promises to load the objects are created in the environment 
+#' specified by \code{env}.  Upon first access, those objects are copied into 
+#' the environment and will from then on reside in memory.  Changes to the
+#' database will not be reflected in the object residing in the environment 
+#' after first access.  Conversely, changes to the object in the environment 
+#' will not be reflected in the database.  This type of loading is useful for 
+#' read-only databases.
+#' 
+#' @return  a character vector is returned (invisibly) containing the keys 
+#' associated with the values loaded into the environment.
+#' 
 setGeneric("dbLazyLoad", function(db, ...) standardGeneric("dbLazyLoad"))
 
+#' @exportMethod dbLazyLoad
 setMethod("dbLazyLoad", "filehash",
           function(db, env = parent.frame(2), keys = NULL, ...) {
               if(is.null(keys))
@@ -179,8 +252,30 @@ setMethod("dbLazyLoad", "filehash",
               invisible(keys)
           })
           
-## Load active bindings into an environment and return the environment
-
+#' Load Active Bindings
+#' 
+#' Load active bindings into an environment and return the environment
+#' 
+#' @param db filehash database object
+#' 
+#' @return environment containing database keys
+#' 
+#' @details \code{db2env} loads the entire database \code{db} into an 
+#' environment via calls to \code{makeActiveBinding}.  Therefore, the data 
+#' themselves are not stored in the environment, but a function pointing to 
+#' the data in the database is stored.  When an element of the environment is 
+#' accessed, the function is called to retrieve the data from the database.  
+#' If the data in the database is changed, the changes will be reflected in the 
+#' environment. 
+#' 
+#' @details The use of \code{makeActiveBinding} in \code{db2env} and 
+#' \code{dbLoad} allows for potentially large databases to, at least 
+#' conceptually, be used in R, as long as you don't need simultaneous access 
+#' to all of the   elements in the database.
+#' 
+#' @seealso \code{\link{dbLoad}}, \code{\link{dbLazyLoad}}
+#' 
+#' @export
 db2env <- function(db) {
     if(is.character(db))
         db <- dbInit(db)  ## use the default type
@@ -193,17 +288,22 @@ db2env <- function(db) {
 ## Other methods
 
 setGeneric("names")
+
+#' @exportMethod names
 setMethod("names", "filehash",
           function(x) {
                   dbList(x)
           })
 
 setGeneric("length")
+
+#' @exportMethod length
 setMethod("length", "filehash",
           function(x) {
                   length(dbList(x))
           })
 
+#' @exportMethod coerce
 setAs("filehash", "list",
       function(from) {
               env <- new.env(hash = TRUE)
@@ -212,6 +312,8 @@ setAs("filehash", "list",
       })
 
 setGeneric("with")
+
+#' @exportMethod with
 setMethod("with", "filehash",
           function(data, expr, ...) {
               env <- db2env(data)
@@ -219,6 +321,8 @@ setMethod("with", "filehash",
           })
 
 setGeneric("lapply")
+
+#' @exportMethod lapply
 setMethod("lapply", signature(X = "filehash"),
           function(X, FUN, ..., keep.names = TRUE) {
               FUN <- match.fun(FUN)

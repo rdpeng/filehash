@@ -17,6 +17,7 @@
 ## 02110-1301, USA
 ##########################################################################
 
+
 dumpEnv <- function(env, dbName) {
         keys <- ls(env, all.names = TRUE)
         dumpObjects(list = keys, dbName = dbName, envir = env)
