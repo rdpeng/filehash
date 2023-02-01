@@ -30,12 +30,14 @@ toDBType <- function(from, type, dbpath = NULL) {
     invisible(db)
 }
 
+#' @exportMethod coerce
 setAs("filehashDB1", "filehashRDS",
       function(from) {
           dbpath <- paste(dbName(from), "RDS", sep = "")
           toDBType(from, "RDS", dbpath)
       })
       
+#' @exportMethod coerce
 setAs("filehashDB1", "list",
       function(from) {
           keys <- dbList(from)
