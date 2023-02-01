@@ -17,17 +17,41 @@
 ## 02110-1301, USA
 ##########################################################################
 
-
+#' Dump Environment
+#' 
+#' Dump an enviroment to a filehash database
+#' 
+#' @param env an environment
+#' @param dbName character, name of the filehash database
+#' @param list, character vector of object names to be dumped
+#' @param data a data frame
+#' @param type type of filehash database to create
+#' 
+#' @details The \code{dumpEnv} function takes an environment and stores each element of the environment in a \code{filehash} database. Objects dumped to a database can later be loaded via \code{dbLoad} or can be accessed with \code{dbFetch}, \code{dbList}, etc. Alternatively, the \code{with} method can be used to evaluate code in the context of a database.  If a database with name \code{dbName} already exists, objects will be inserted into the existing database (and values for already-existing keys will be overwritten).
+#' 
+#' @details \code{dumpDF} is different in that each variable in the data frame is stored as a separate object in the database.  So each variable can be read from the database separately rather than having to load the entire data frame into memory.  \code{dumpList} works in a simlar way.
+#' 
+#' @return An object of class \code{"filehash"} is returned and a database is created.
+#' 
+#' @aliases dumpImage dumpObjects dumpDF dumpList
+#' @name dumpEnv
+#'
+#' @export
 dumpEnv <- function(env, dbName) {
         keys <- ls(env, all.names = TRUE)
         dumpObjects(list = keys, dbName = dbName, envir = env)
 }
 
+#' @export
+#' @describeIn dumpEnv Dump the Global Environment (analogous to \code{save.image})
 dumpImage <- function(dbName = "Rworkspace", type = NULL) {
         dumpObjects(list = ls(envir = globalenv(), all.names = TRUE),
                     dbName = dbName, type = type, envir = globalenv())
 }
 
+#' @export
+#' @describeIn dumpEnv Dump named objects to a filehash database (analogous to \code{save})
+#' @param envir environment from which objects are dumped
 dumpObjects <- function(..., list = character(0), dbName, type = NULL,
                         envir = parent.frame()) {
         names <- as.character(substitute(list(...)))[-1]
@@ -41,12 +65,16 @@ dumpObjects <- function(..., list = character(0), dbName, type = NULL,
         db
 }
 
+#' @export
+#' @describeIn dumpEnv Dump data frame columns to a filehash database
 dumpDF <- function(data, dbName = NULL, type = NULL) {
         if(is.null(dbName))
                 dbName <- as.character(substitute(data))
         dumpList(as.list(data), dbName = dbName, type = type)
 }
 
+#' @export
+#' @describeIn dumpEnv Dump elements of a list to a filehash database
 dumpList <- function(data, dbName = NULL, type = NULL) {
         if(!is.list(data))
                 stop("'data' must be a list")
