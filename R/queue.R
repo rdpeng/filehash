@@ -17,17 +17,25 @@
 ## 02110-1301, USA
 ##########################################################################
 
+#' A Queue Class
+#' 
+#' A queue implementation using a \code{filehash} database
+#' 
+#' @details Objects can be created by calls of the form \code{new("queue", ...)} or by calling \code{createQ}.  Existing queues can be initialized with \code{initQ}.
+#' 
+#' @slot queue Object of class \code{"filehashDB1"}
+#' @slot name Object of class \code{"character"}: the name of the queue (default is the file name in which the queue data are stored)
+#' @exportClass queue
 setClass("queue",
          representation(queue = "filehashDB1",
                         name = "character")
          )
 
-setMethod("show", "queue",
-          function(object) {
-                  cat(gettextf("<queue: %s>\n", object@name))
-                  invisible(object)
-          })
-
+#' @param filename name of queue file
+#' 
+#' @return \code{createQ} and \code{initQ} return a \code{queue} object
+#' @export
+#' @describeIn queue Create a file-based queue object
 createQ <- function(filename) {
         dbCreate(filename, "DB1")
         queue <- dbInit(filename, "DB1")
@@ -37,6 +45,8 @@ createQ <- function(filename) {
         new("queue", queue = queue, name = filename)
 }
 
+#' @export
+#' @describeIn queue Intialize an existing queue object
 initQ <- function(filename) {
         new("queue",
             queue = dbInit(filename, "DB1"),
@@ -44,20 +54,37 @@ initQ <- function(filename) {
 }
 
 ## Public
+
 setGeneric("pop", function(db, ...) standardGeneric("pop"))
+
 setGeneric("push", function(db, val, ...) standardGeneric("push"))
+
 setGeneric("isEmpty", function(db, ...) standardGeneric("isEmpty"))
+
 setGeneric("top", function(db, ...) standardGeneric("top"))
+
+
+#' @exportMethod show
+#' @describeIn queue Print a queue object
+setMethod("show", "queue",
+          function(object) {
+                  cat(gettextf("<queue: %s>\n", object@name))
+                  invisible(object)
+          })
 
 
 ################################################################################
 ## Methods
 
+#' @exportMethod lockFile
 setMethod("lockFile", "queue",
           function(db, ...) {
                   paste(db@name, "qlock", sep = ".")
           })
 
+#' @exportMethod push
+#' @describeIn queue adds an element to the tail ("bottom") of the queue
+#' @param val an R object to be added to the tail queue
 setMethod("push", c("queue", "ANY"), function(db, val, ...) {
         ## Create a new tail node
         node <- list(value = val,
@@ -81,10 +108,14 @@ setMethod("push", c("queue", "ANY"), function(db, val, ...) {
         dbInsert(db@queue, "tail", key)
 })
 
+#' @exportMethod isEmpty
+#' @describeIn queue returns \code{TRUE}/\code{FALSE} depending on whether there are elements in the queue.
 setMethod("isEmpty", "queue", function(db) {
         is.null(dbFetch(db@queue, "head"))
 })
 
+#' @exportMethod top
+#' @describeIn queue returns the value of the "top" (i.e. head) of the queue; an error is signaled if the queue is empty
 setMethod("top", "queue", function(db, ...) {
         createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
@@ -96,6 +127,9 @@ setMethod("top", "queue", function(db, ...) {
         node$value
 })
 
+#' @exportMethod pop
+#' @describeIn queue returns the value of the "top" (i.e. head) of the queue and subsequently removes that element from the queue; an error is signaled if the queue is empty
+#' @param db a queue object
 setMethod("pop", "queue", function(db, ...) {
         createLockFile(lockFile(db))
         on.exit(deleteLockFile(lockFile(db)))
