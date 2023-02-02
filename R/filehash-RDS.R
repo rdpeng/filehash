@@ -20,6 +20,12 @@
 ################################################################################
 ## Class 'filehashRDS'
 
+#' Filehash RDS Class
+#' 
+#' An implementation of filehash databases using diretories and separate files
+#' 
+#' @exportClass filehashRDS
+#' @slot dir Directory where files are stored (filehashRDS only)
 setClass("filehashRDS",
          representation(dir = "character"),
          contains = "filehash"

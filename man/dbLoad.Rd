@@ -2,15 +2,35 @@
 % Please edit documentation in R/filehash.R
 \name{dbLoad}
 \alias{dbLoad}
+\alias{dbLoad,filehash-method}
+\alias{dbLazyLoad}
+\alias{dbLazyLoad,filehash-method}
+\alias{db2env}
 \title{Load a Database}
 \usage{
 dbLoad(db, ...)
+
+\S4method{dbLoad}{filehash}(db, env = parent.frame(2), keys = NULL, ...)
+
+dbLazyLoad(db, ...)
+
+\S4method{dbLazyLoad}{filehash}(db, env = parent.frame(2), keys = NULL, ...)
+
+db2env(db)
 }
 \arguments{
 \item{db}{filehash database object}
+
+\item{...}{arguments passed to other methods}
+
+\item{env}{environment into which objects should be loaded}
+
+\item{keys}{specific keys to be loaded (if NULL then all keys are loaded)}
 }
 \value{
-a character vector containing the names of loaded objects
+dbLoad, dbLazyLoad: a character vector is returned (invisibly) containing the keys associated with the values loaded into the environment.
+
+db2env: environment containing database keys
 }
 \description{
 Load entire database into an environment
@@ -25,4 +45,43 @@ The use of \code{makeActiveBinding} in \code{db2env} and
 \code{dbLoad} allows for potentially large databases to, at least 
 conceptually, be used in R, as long as you don't need simultaneous access to 
 all of the elements in the database.
+
+\code{dbLazyLoad} loads objects in the database directly into the
+environment specified, like \code{load} does except with promises. 
+\code{dbLazyLoad} takes a second argument \code{env}, which is an 
+environment, and the default for \code{env} is \code{parent.frame()}.
+
+With \code{dbLazyLoad} database objects are "lazy-loaded" into 
+the environment. Promises to load the objects are created in the environment 
+specified by \code{env}.  Upon first access, those objects are copied into 
+the environment and will from then on reside in memory.  Changes to the
+database will not be reflected in the object residing in the environment 
+after first access.  Conversely, changes to the object in the environment 
+will not be reflected in the database.  This type of loading is useful for 
+read-only databases.
+
+\code{db2env} loads the entire database \code{db} into an 
+environment via calls to \code{makeActiveBinding}.  Therefore, the data 
+themselves are not stored in the environment, but a function pointing to 
+the data in the database is stored.  When an element of the environment is 
+accessed, the function is called to retrieve the data from the database.  
+If the data in the database is changed, the changes will be reflected in the 
+environment.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{dbLoad(filehash)}: Method for filehash databases
+
+\item \code{dbLazyLoad(filehash)}: Method for filehash databases
+
+}}
+\section{Functions}{
+\itemize{
+\item \code{dbLazyLoad()}: Lazy load a filehash database
+
+\item \code{db2env()}: Load active bindings into an environment and return the environment
+
+}}
+\seealso{
+\code{\link{dbLoad}}, \code{\link{dbLazyLoad}}
 }

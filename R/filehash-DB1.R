@@ -31,6 +31,13 @@
 ## 'meta' is a list of functions for updating the file size of the
 ## database and the file map.
 
+#' Filehash DB1 Class
+#' 
+#' An implementation of filehash databases using a single large file
+#' 
+#' @exportClass filehashDB1
+#' @slot datafile full path to the database file (filehashDB1 only)
+#' @slot meta list containing an environment for database metadata (filehashDB1 only)
 setClass("filehashDB1",
          representation(datafile = "character",
                         meta = "list"),
@@ -81,6 +88,7 @@ makeMetaEnv <- function(filename) {
              getsize = getsize)
 }
 
+#' @importFrom methods new
 initializeDB1 <- function(dbName) {
         if(!hasWorkingFtell())
                 stop("need working 'ftell()' to use DB1 format")
@@ -271,6 +279,7 @@ openDBConn <- function(filename, mode) {
         con
 }
 
+#' @exportMethod dbInsert
 setMethod("dbInsert",
           signature(db = "filehashDB1", key = "character", value = "ANY"),
           function(db, key, value, ...) {
@@ -284,6 +293,7 @@ setMethod("dbInsert",
                   invisible(writeKeyValue(con, key, value))
           })
 
+#' @exportMethod dbFetch
 setMethod("dbFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
@@ -301,6 +311,7 @@ setMethod("dbFetch",
                   val
           })
 
+#' @exportMethod dbMultiFetch
 setMethod("dbMultiFetch",
           signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
@@ -317,12 +328,14 @@ setMethod("dbMultiFetch",
                   readKeys(con, map, key)
           })
 
+#' @exportMethod dbExists
 setMethod("dbExists", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
                   dbkeys <- dbList(db)
                   key %in% dbkeys
           })
 
+#' @exportMethod dbList
 setMethod("dbList", "filehashDB1",
           function(db, ...) {
                   con <- openDBConn(db@datafile, "rb")
@@ -344,6 +357,7 @@ setMethod("dbList", "filehashDB1",
                   }
           })
 
+#' @exportMethod dbDelete
 setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
           function(db, key, ...) {
                   con <- openDBConn(db@datafile, "ab")
@@ -356,6 +370,7 @@ setMethod("dbDelete", signature(db = "filehashDB1", key = "character"),
                   invisible(writeNullKeyValue(con, key))
           })
 
+#' @exportMethod dbUnlink
 setMethod("dbUnlink", "filehashDB1",
           function(db, ...) {
                   file.remove(db@datafile)
@@ -409,6 +424,7 @@ reorganizeDB <- function(db, ...) {
         TRUE
 }
 
+#' @exportMethod dbReorganize
 setMethod("dbReorganize", "filehashDB1", reorganizeDB)
 
 

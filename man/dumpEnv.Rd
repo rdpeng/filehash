@@ -31,6 +31,8 @@ dumpList(data, dbName = NULL, type = NULL)
 
 \item{type}{type of filehash database to create}
 
+\item{...}{R objects to be dumped to a filehash database}
+
 \item{list, }{character vector of object names to be dumped}
 
 \item{envir}{environment from which objects are dumped}

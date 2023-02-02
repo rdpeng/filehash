@@ -33,6 +33,7 @@ setClass("stack",
 
 #' @exportMethod show
 #' @describeIn stack Print a stack object.
+#' @param object a stack object
 setMethod("show", "stack",
           function(object) {
                   cat(gettextf("<stack: %s>\n", object@name))
@@ -52,6 +53,7 @@ createS <- function(filename) {
 }
 
 #' @describeIn stack Initialize and existing filehash stack
+#' @param filename name of file where stack is stored
 #' @export
 initS <- function(filename) {
         new("stack",
@@ -66,7 +68,9 @@ setMethod("lockFile", "stack",
           })
 
 #' @exportMethod push
+#' @param db a stack object
 #' @param val an R object to be added to the stack
+#' @param ... arguments passed to other methods
 #' @describeIn stack Push an object on to the stack
 setMethod("push", c("stack", "ANY"), function(db, val, ...) {
         node <- list(value = val,

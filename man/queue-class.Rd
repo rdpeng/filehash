@@ -29,9 +29,13 @@ initQ(filename)
 \arguments{
 \item{filename}{name of queue file}
 
+\item{object}{a queue object}
+
 \item{db}{a queue object}
 
 \item{val}{an R object to be added to the tail queue}
+
+\item{...}{arguments passed to other methods}
 }
 \value{
 \code{createQ} and \code{initQ} return a \code{queue} object

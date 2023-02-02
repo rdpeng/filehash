@@ -25,7 +25,6 @@
 #' @param dbName character, name of the filehash database
 #' @param list, character vector of object names to be dumped
 #' @param data a data frame
-#' @param type type of filehash database to create
 #' 
 #' @details The \code{dumpEnv} function takes an environment and stores each element of the environment in a \code{filehash} database. Objects dumped to a database can later be loaded via \code{dbLoad} or can be accessed with \code{dbFetch}, \code{dbList}, etc. Alternatively, the \code{with} method can be used to evaluate code in the context of a database.  If a database with name \code{dbName} already exists, objects will be inserted into the existing database (and values for already-existing keys will be overwritten).
 #' 
@@ -44,6 +43,7 @@ dumpEnv <- function(env, dbName) {
 
 #' @export
 #' @describeIn dumpEnv Dump the Global Environment (analogous to \code{save.image})
+#' @param type type of filehash database to create
 dumpImage <- function(dbName = "Rworkspace", type = NULL) {
         dumpObjects(list = ls(envir = globalenv(), all.names = TRUE),
                     dbName = dbName, type = type, envir = globalenv())
@@ -51,6 +51,7 @@ dumpImage <- function(dbName = "Rworkspace", type = NULL) {
 
 #' @export
 #' @describeIn dumpEnv Dump named objects to a filehash database (analogous to \code{save})
+#' @param ... R objects to be dumped to a filehash database
 #' @param envir environment from which objects are dumped
 dumpObjects <- function(..., list = character(0), dbName, type = NULL,
                         envir = parent.frame()) {

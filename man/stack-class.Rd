@@ -30,9 +30,15 @@ initS(filename)
 \S4method{pop}{stack}(db, ...)
 }
 \arguments{
-\item{filename}{name of file to store stack}
+\item{object}{a stack object}
+
+\item{filename}{name of file where stack is stored}
+
+\item{db}{a stack object}
 
 \item{val}{an R object to be added to the stack}
+
+\item{...}{arguments passed to other methods}
 
 \item{vals}{a list of R objects}
 }

@@ -66,6 +66,7 @@ setGeneric("top", function(db, ...) standardGeneric("top"))
 
 #' @exportMethod show
 #' @describeIn queue Print a queue object
+#' @param object a queue object
 setMethod("show", "queue",
           function(object) {
                   cat(gettextf("<queue: %s>\n", object@name))
@@ -84,7 +85,9 @@ setMethod("lockFile", "queue",
 
 #' @exportMethod push
 #' @describeIn queue adds an element to the tail ("bottom") of the queue
+#' @param db a queue object
 #' @param val an R object to be added to the tail queue
+#' @param ... arguments passed to other methods
 setMethod("push", c("queue", "ANY"), function(db, val, ...) {
         ## Create a new tail node
         node <- list(value = val,

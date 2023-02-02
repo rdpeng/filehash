@@ -3,7 +3,151 @@
 \docType{class}
 \name{filehash-class}
 \alias{filehash-class}
+\alias{show,filehash-method}
+\alias{dbCreate,ANY-method}
+\alias{dbCreate}
+\alias{dbInit,ANY-method}
+\alias{dbInit}
+\alias{names,filehash-method}
+\alias{length,filehash-method}
+\alias{with,filehash-method}
+\alias{lapply,filehash-method}
+\alias{dbMultiFetch}
+\alias{dbInsert}
+\alias{dbFetch}
+\alias{dbExists}
+\alias{dbList}
+\alias{dbDelete}
+\alias{dbReorganize}
+\alias{dbUnlink}
+\alias{[[,filehash,character,missing-method}
+\alias{$,filehash-method}
+\alias{[[<-,filehash,character,missing-method}
+\alias{$<-,filehash-method}
 \title{Filehash Class}
-\description{
-Filehash Class
+\usage{
+\S4method{show}{filehash}(object)
+
+\S4method{dbCreate}{ANY}(db, type = NULL, ...)
+
+\S4method{dbInit}{ANY}(db, type = NULL, ...)
+
+\S4method{names}{filehash}(x)
+
+\S4method{length}{filehash}(x)
+
+\S4method{with}{filehash}(data, expr, ...)
+
+\S4method{lapply}{filehash}(X, FUN, ..., keep.names = TRUE)
+
+dbMultiFetch(db, key, ...)
+
+dbInsert(db, key, value, ...)
+
+dbFetch(db, key, ...)
+
+dbExists(db, key, ...)
+
+dbList(db, ...)
+
+dbDelete(db, key, ...)
+
+dbReorganize(db, ...)
+
+dbUnlink(db, ...)
+
+\S4method{[[}{filehash,character,missing}(x, i, j)
+
+\S4method{$}{filehash}(x, name)
+
+\S4method{[[}{filehash,character,missing}(x, i, j) <- value
+
+\S4method{$}{filehash}(x, name) <- value
 }
+\arguments{
+\item{object}{a filehash object}
+
+\item{db}{a filehash object}
+
+\item{type}{filehash database type}
+
+\item{...}{arguments passed to other methods}
+
+\item{x}{a filehash object}
+
+\item{data}{a filehash object}
+
+\item{expr}{an R expression to be evaluated}
+
+\item{X}{a filehash object}
+
+\item{FUN}{a function to be applied}
+
+\item{keep.names}{Should the key names be returned in the resulting list?}
+
+\item{key}{a character vector indicating a key (or keys) to retreive}
+
+\item{value}{an R object}
+
+\item{i}{a character index}
+
+\item{j}{not used}
+
+\item{name}{the name of the element in the filehash database}
+}
+\description{
+These functions form the interface for a simple file-based key-value database (i.e. hash table).
+}
+\details{
+Objects can be created by calls of the form \code{new("filehash", ...)}.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{show(filehash)}: Print a filehash object
+
+\item \code{dbCreate(ANY)}: Create a filehash database
+
+\item \code{dbInit(ANY)}: Initialize an existing filehash database
+
+\item \code{names(filehash)}: Return the keys stored in a filehash database
+
+\item \code{length(filehash)}: Return the number of objects in a filehash database
+
+\item \code{with(filehash)}: Use a filehash database as an evaluation environment
+
+\item \code{lapply(filehash)}: Apply a function over the elements of a filehash database
+
+\item \code{x[[i}: Extract elements of a filehash database using character names
+
+\item \code{$}: Extract elements of a filehash database using character names
+
+\item \code{`[[`(x = filehash, i = character, j = missing) <- value}: Replace elements of a filehash database
+
+\item \code{`$`(filehash) <- value}: Replace elements of a filehash database
+
+}}
+\section{Functions}{
+\itemize{
+\item \code{dbMultiFetch()}: Retrieve values associated with multiple keys (a list of those values is returned).
+
+\item \code{dbInsert()}: Insert a key-value pair into the database.  If that key already exists, its associated value is overwritten. For \code{"RDS"} type databases, there is a \code{safe} option (defaults to \code{TRUE}) which allows the user to insert objects somewhat more safely (objects should not be lost in the event of an interrupt).
+
+\item \code{dbFetch()}: Retrieve the value associated with a given key.
+
+\item \code{dbExists()}: Check to see if a key exists.
+
+\item \code{dbList()}: List all keys in the database.
+
+\item \code{dbDelete()}: The \code{dbDelete} function is for deleting elements, but for the \code{"DB1"} format all it does is remove the key from the lookup table. The actual data are still in the database (but inaccessible).  If you reinsert data for the same key, the new data are simply appended on to the end of the file.  Therefore, it's possible to have multiple copies of data lying around after a while, potentially making the database file big.  The \code{"RDS"} format does not have this problem.
+
+\item \code{dbReorganize()}: The \code{dbReorganize} function is there for the purpose of rewriting the database to remove all of the stale entries.  Basically, this function creates a new copy of the database and then overwrites the old copy.  This function has not been tested extensively and so should be considered \emph{experimental}.  \code{dbReorganize} is not needed when using the \code{"RDS"} format.
+
+\item \code{dbUnlink()}: Delete an entire database from the disk.
+
+}}
+\section{Slots}{
+
+\describe{
+\item{\code{name}}{Object of class \code{"character"}, name of the database.}
+}}
+
