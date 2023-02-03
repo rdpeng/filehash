@@ -84,6 +84,7 @@ setMethod("push", c("stack", "ANY"), function(db, val, ...) {
         dbInsert(db@stack, "top", topkey)
 })
 
+#' @describeIn stack Push multiple R objects on to a stack
 setGeneric("mpush", function(db, vals, ...) standardGeneric("mpush"))
 
 #' @exportMethod mpush

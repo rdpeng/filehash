@@ -7,6 +7,7 @@
 \alias{createS}
 \alias{initS}
 \alias{push,stack-method}
+\alias{mpush}
 \alias{mpush,stack-method}
 \alias{isEmpty,stack-method}
 \alias{top,stack-method}
@@ -20,6 +21,8 @@ createS(filename)
 initS(filename)
 
 \S4method{push}{stack}(db, val, ...)
+
+mpush(db, vals, ...)
 
 \S4method{mpush}{stack}(db, vals, ...)
 
@@ -71,6 +74,8 @@ Objects can be created by calls of the form \code{new("stack", ...)} or by calli
 \item \code{createS()}: Create a filehash Stack
 
 \item \code{initS()}: Initialize and existing filehash stack
+
+\item \code{mpush()}: Push multiple R objects on to a stack
 
 }}
 \section{Slots}{

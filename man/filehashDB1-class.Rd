@@ -3,10 +3,66 @@
 \docType{class}
 \name{filehashDB1-class}
 \alias{filehashDB1-class}
+\alias{dbInsert,filehashDB1,character-method}
+\alias{dbFetch,filehashDB1,character-method}
+\alias{dbMultiFetch,filehashDB1,character-method}
+\alias{dbExists,filehashDB1,character-method}
+\alias{dbList,filehashDB1-method}
+\alias{dbDelete,filehashDB1,character-method}
+\alias{dbUnlink,filehashDB1-method}
+\alias{dbReorganize,filehashDB1-method}
 \title{Filehash DB1 Class}
+\usage{
+\S4method{dbInsert}{filehashDB1,character}(db, key, value, ...)
+
+\S4method{dbFetch}{filehashDB1,character}(db, key, ...)
+
+\S4method{dbMultiFetch}{filehashDB1,character}(db, key, ...)
+
+\S4method{dbExists}{filehashDB1,character}(db, key, ...)
+
+\S4method{dbList}{filehashDB1}(db, ...)
+
+\S4method{dbDelete}{filehashDB1,character}(db, key, ...)
+
+\S4method{dbUnlink}{filehashDB1}(db, ...)
+
+\S4method{dbReorganize}{filehashDB1}(db, ...)
+}
+\arguments{
+\item{db}{a filehashDB1 object}
+
+\item{key}{character, the name of an R object in the database}
+
+\item{value}{an R object}
+
+\item{...}{arguments passed to other methods}
+}
 \description{
 An implementation of filehash databases using a single large file
 }
+\details{
+For \code{dbMultiFetch}, \code{key} is a character vector of keys.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{dbInsert(db = filehashDB1, key = character)}: Insert an R object into a filehashDB1 database
+
+\item \code{dbFetch(db = filehashDB1, key = character)}: Retrieve an object from a filehash DB1 database
+
+\item \code{dbMultiFetch(db = filehashDB1, key = character)}: Retrieve multiple objects from a filehash DB1 database
+
+\item \code{dbExists(db = filehashDB1, key = character)}: Determine if a key exists in a filehash DB1 database
+
+\item \code{dbList(filehashDB1)}: Return a character vector containing all keys in a database
+
+\item \code{dbDelete(db = filehashDB1, key = character)}: Delete a key and it's corresponding object from a filehashDB1 database
+
+\item \code{dbUnlink(filehashDB1)}: Delete an entire filehashDB1 database
+
+\item \code{dbReorganize(filehashDB1)}: Reorganize and compactify a filehahsDB1 database
+
+}}
 \section{Slots}{
 
 \describe{

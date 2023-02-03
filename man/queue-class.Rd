@@ -5,6 +5,10 @@
 \alias{queue-class}
 \alias{createQ}
 \alias{initQ}
+\alias{pop}
+\alias{push}
+\alias{isEmpty}
+\alias{top}
 \alias{show,queue-method}
 \alias{push,queue-method}
 \alias{isEmpty,queue-method}
@@ -15,6 +19,14 @@
 createQ(filename)
 
 initQ(filename)
+
+pop(db, ...)
+
+push(db, val, ...)
+
+isEmpty(db, ...)
+
+top(db, ...)
 
 \S4method{show}{queue}(object)
 
@@ -29,13 +41,13 @@ initQ(filename)
 \arguments{
 \item{filename}{name of queue file}
 
-\item{object}{a queue object}
-
 \item{db}{a queue object}
+
+\item{...}{arguments passed to other methods}
 
 \item{val}{an R object to be added to the tail queue}
 
-\item{...}{arguments passed to other methods}
+\item{object}{a queue object}
 }
 \value{
 \code{createQ} and \code{initQ} return a \code{queue} object
@@ -64,6 +76,14 @@ Objects can be created by calls of the form \code{new("queue", ...)} or by calli
 \item \code{createQ()}: Create a file-based queue object
 
 \item \code{initQ()}: Intialize an existing queue object
+
+\item \code{pop()}: Return (and remove) the top element of a queue
+
+\item \code{push()}: Push an R object on to the tail of a queue
+
+\item \code{isEmpty()}: Check if a queue is empty or not
+
+\item \code{top()}: Return the top of the queue
 
 }}
 \section{Slots}{

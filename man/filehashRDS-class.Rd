@@ -3,10 +3,65 @@
 \docType{class}
 \name{filehashRDS-class}
 \alias{filehashRDS-class}
+\alias{dbInsert,filehashRDS,character-method}
+\alias{dbFetch,filehashRDS,character-method}
+\alias{dbMultiFetch,filehashRDS,character-method}
+\alias{dbExists,filehashRDS,character-method}
+\alias{dbList,filehashRDS-method}
+\alias{dbDelete,filehashRDS,character-method}
+\alias{dbUnlink,filehashRDS-method}
 \title{Filehash RDS Class}
+\usage{
+\S4method{dbInsert}{filehashRDS,character}(db, key, value, safe = TRUE, ...)
+
+\S4method{dbFetch}{filehashRDS,character}(db, key, ...)
+
+\S4method{dbMultiFetch}{filehashRDS,character}(db, key, ...)
+
+\S4method{dbExists}{filehashRDS,character}(db, key, ...)
+
+\S4method{dbList}{filehashRDS}(db, ...)
+
+\S4method{dbDelete}{filehashRDS,character}(db, key, ...)
+
+\S4method{dbUnlink}{filehashRDS}(db, ...)
+}
+\arguments{
+\item{db}{a filehashRDS object}
+
+\item{key}{character, the name of an R object}
+
+\item{value}{an R object}
+
+\item{safe}{Should the operation be done safely?}
+
+\item{...}{arguments passed to other methods}
+}
 \description{
 An implementation of filehash databases using diretories and separate files
 }
+\details{
+When \code{safe = TRUE} in \code{dbInsert}, objects are written to a temp file before replacing any existing objects. This way, if the operation is interrupted, the original data are not corrupted.
+
+For \code{dbMultiFetch}, \code{key} is a character vector of keys.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{dbInsert(db = filehashRDS, key = character)}: Insert an R object into a filehashRDS database
+
+\item \code{dbFetch(db = filehashRDS, key = character)}: Retrieve a value from a filehashRDS database
+
+\item \code{dbMultiFetch(db = filehashRDS, key = character)}: Retrieve multiple objects from a filehashRDS database
+
+\item \code{dbExists(db = filehashRDS, key = character)}: Determine if a key exists in a filehashRDS database
+
+\item \code{dbList(filehashRDS)}: Return a character vector of all key stored in a database
+
+\item \code{dbDelete(db = filehashRDS, key = character)}: Delete a key and its corresponding object from a filehashRDS database
+
+\item \code{dbUnlink(filehashRDS)}: Delete an entire filehashRDS database
+
+}}
 \section{Slots}{
 
 \describe{

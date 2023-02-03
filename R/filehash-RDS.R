@@ -87,6 +87,14 @@ setMethod("objectFile", signature(db = "filehashRDS", key = "character"),
 ################################################################################
 ## Interface functions
 
+#' @describeIn filehashRDS Insert an R object into a filehashRDS database
+#' @exportMethod dbInsert
+#' @param db a filehashRDS object
+#' @param key character, the name of an R object
+#' @param value an R object
+#' @param ... arguments passed to other methods
+#' @param safe Should the operation be done safely?
+#' @details When \code{safe = TRUE} in \code{dbInsert}, objects are written to a temp file before replacing any existing objects. This way, if the operation is interrupted, the original data are not corrupted.
 setMethod("dbInsert",
           signature(db = "filehashRDS", key = "character", value = "ANY"),
           function(db, key, value, safe = TRUE, ...) {
@@ -122,6 +130,8 @@ setMethod("dbInsert",
                   invisible(cpstatus)
           })
 
+#' @exportMethod dbFetch
+#' @describeIn filehashRDS Retrieve a value from a filehashRDS database
 setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   ## Create filename from key
@@ -147,6 +157,9 @@ setMethod("dbFetch", signature(db = "filehashRDS", key = "character"),
                   val
           })
 
+#' @exportMethod dbMultiFetch
+#' @describeIn filehashRDS Retrieve multiple objects from a filehashRDS database
+#' @details For \code{dbMultiFetch}, \code{key} is a character vector of keys.
 setMethod("dbMultiFetch",
           signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
@@ -155,11 +168,15 @@ setMethod("dbMultiFetch",
                   r
           })
 
+#' @exportMethod dbExists
+#' @describeIn filehashRDS Determine if a key exists in a filehashRDS database
 setMethod("dbExists", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   key %in% dbList(db)
           })
 
+#' @exportMethod dbList
+#' @describeIn filehashRDS Return a character vector of all key stored in a database
 setMethod("dbList", "filehashRDS",
           function(db, ...) {
                   ## list all keys/files in the database
@@ -170,6 +187,8 @@ setMethod("dbList", "filehashRDS",
                   unMangleName(fileList)
           })
 
+#' @exportMethod dbDelete
+#' @describeIn filehashRDS Delete a key and its corresponding object from a filehashRDS database
 setMethod("dbDelete", signature(db = "filehashRDS", key = "character"),
           function(db, key, ...) {
                   ofile <- objectFile(db, key)
@@ -179,6 +198,8 @@ setMethod("dbDelete", signature(db = "filehashRDS", key = "character"),
                   invisible(isTRUE(all(status)))
           })
 
+#' @exportMethod dbUnlink
+#' @describeIn filehashRDS Delete an entire filehashRDS database
 setMethod("dbUnlink", "filehashRDS",
           function(db, ...) {
                   ## delete the entire database directory

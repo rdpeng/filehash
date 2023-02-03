@@ -55,12 +55,16 @@ initQ <- function(filename) {
 
 ## Public
 
+#' @describeIn queue Return (and remove) the top element of a queue
 setGeneric("pop", function(db, ...) standardGeneric("pop"))
 
+#' @describeIn queue Push an R object on to the tail of a queue
 setGeneric("push", function(db, val, ...) standardGeneric("push"))
 
+#' @describeIn queue Check if a queue is empty or not
 setGeneric("isEmpty", function(db, ...) standardGeneric("isEmpty"))
 
+#' @describeIn queue Return the top of the queue
 setGeneric("top", function(db, ...) standardGeneric("top"))
 
 
@@ -77,7 +81,6 @@ setMethod("show", "queue",
 ################################################################################
 ## Methods
 
-#' @exportMethod lockFile
 setMethod("lockFile", "queue",
           function(db, ...) {
                   paste(db@name, "qlock", sep = ".")
