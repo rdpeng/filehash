@@ -5,8 +5,8 @@ Imports: digest, methods
 Collate: filehash.R filehash-DB1.R filehash-RDS.R coerce.R dump.R
         hash.R queue.R stack.R zzz.R
 Title: Simple Key-Value Database
-Author: Roger D. Peng <rdpeng@jhu.edu>
-Maintainer: Roger D. Peng <rdpeng@jhu.edu>
+Author: Roger D. Peng <roger.peng@austin.utexas.edu>
+Maintainer: Roger D. Peng <roger.peng@austin.utexas.edu>
 Description: Implements a simple key-value style database where character string keys
   are associated with data values that are stored on the disk. A simple interface is provided for inserting,
   retrieving, and deleting data from the database. Utilities are provided that allow 'filehash' databases to be
