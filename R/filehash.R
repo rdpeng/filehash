@@ -54,7 +54,6 @@ setMethod("show", "filehash",
                            object@name))
           })
 
-
 ######################################################################
 
 #' Register Database Format
@@ -318,14 +317,6 @@ setMethod("length", "filehash",
                   length(dbList(x))
           })
 
-#' @exportMethod coerce
-setAs("filehash", "list",
-      function(from) {
-              env <- new.env(hash = TRUE)
-              dbLoad(from, env)
-              as.list(env, all.names = TRUE)
-      })
-
 setGeneric("with")
 
 #' @exportMethod with
@@ -403,6 +394,7 @@ setGeneric("lockFile", function(db, ...) standardGeneric("lockFile"))
 #' @exportMethod `[[`
 #' @param j not used
 #' @describeIn filehash Extract elements of a filehash database using character names
+#' @aliases `[[,filehash,character,missing-method`
 setMethod("[[", signature(x = "filehash", i = "character", j = "missing"),
           function(x, i, j) {
               dbFetch(x, i)
@@ -441,16 +433,9 @@ setReplaceMethod("$", signature(x = "filehash"),
 ## Need to define these because they're not automatically caught.
 ## Don't need this if R >= 2.4.0.
 
-setReplaceMethod("[[", signature(x = "filehash", i = "numeric", j = "missing"),
-                 function(x, i, j, value) {
-                     stop("numeric indices not allowed")
-                 })
-
-setMethod("[[", signature(x = "filehash", i = "numeric", j = "missing"),
-          function(x, i, j) {
-              stop("numeric indices not allowed")
-          })
-
+#' @exportMethod `[`
+#' @param drop should dimensions be dropped? (not used)
+#' @describeIn filehash Retrieve multiple elements of a filehash database
 setMethod("[", signature(x = "filehash", i = "character", j = "missing",
                          drop = "missing"),
           function(x, i , j, drop) {
