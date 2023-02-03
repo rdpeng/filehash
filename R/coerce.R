@@ -30,16 +30,48 @@ toDBType <- function(from, type, dbpath = NULL) {
     invisible(db)
 }
 
+#' Coerce a filehash database
+#' 
+#' Coerce a filehashDB1 database to filehashRDS format
+#' 
+#' @name coerceDB1RDS
+#' @param from a filehashDB1 database object
 #' @exportMethod coerce
+#' @aliases coerce,filehashDB1,filehashRDS-method
 setAs("filehashDB1", "filehashRDS",
       function(from) {
           dbpath <- paste(dbName(from), "RDS", sep = "")
           toDBType(from, "RDS", dbpath)
       })
       
+#' Coerce a filehash database
+#' 
+#' Coerce a filehashDB1 database to a list object
+#' 
+#' @name coerceDB1list
+#' @param from a filehashDB1 database object
 #' @exportMethod coerce
+#' @aliases coerce,filehashDB1,list-method
 setAs("filehashDB1", "list",
       function(from) {
           keys <- dbList(from)
           dbMultiFetch(from, keys)
       })
+
+#' Coerce a filehash database
+#' 
+#' Coerce a filehash database to a list object
+#' 
+#' @name coercelist
+#' @param from a filehash database object
+#' @exportMethod coerce
+#' @aliases coerce,filehash,list-method
+setAs("filehash", "list",
+      function(from) {
+              env <- new.env(hash = TRUE)
+              dbLoad(from, env)
+              as.list(env, all.names = TRUE)
+      })
+
+
+

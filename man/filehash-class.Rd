@@ -21,9 +21,11 @@
 \alias{dbReorganize}
 \alias{dbUnlink}
 \alias{[[,filehash,character,missing-method}
+\alias{`[[,filehash,character,missing-method`}
 \alias{$,filehash-method}
 \alias{[[<-,filehash,character,missing-method}
 \alias{$<-,filehash-method}
+\alias{[,filehash,character,missing,missing-method}
 \title{Filehash Class}
 \usage{
 \S4method{show}{filehash}(object)
@@ -63,6 +65,8 @@ dbUnlink(db, ...)
 \S4method{[[}{filehash,character,missing}(x, i, j) <- value
 
 \S4method{$}{filehash}(x, name) <- value
+
+\S4method{[}{filehash,character,missing,missing}(x, i, j, drop)
 }
 \arguments{
 \item{object}{a filehash object}
@@ -94,6 +98,8 @@ dbUnlink(db, ...)
 \item{j}{not used}
 
 \item{name}{the name of the element in the filehash database}
+
+\item{drop}{should dimensions be dropped? (not used)}
 }
 \description{
 These functions form the interface for a simple file-based key-value database (i.e. hash table).
@@ -124,6 +130,8 @@ Objects can be created by calls of the form \code{new("filehash", ...)}.
 \item \code{`[[`(x = filehash, i = character, j = missing) <- value}: Replace elements of a filehash database
 
 \item \code{`$`(filehash) <- value}: Replace elements of a filehash database
+
+\item \code{x[i}: Retrieve multiple elements of a filehash database
 
 }}
 \section{Functions}{
