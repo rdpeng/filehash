@@ -12,8 +12,8 @@
 \title{Interacting with Data using the \textbf{filehash} Package for
 R}
 
-\author{Roger D. Peng $<$rpeng@jhsph.edu$>$\\\textit{Department of
-Biostatistics}\\\textit{Johns Hopkins Bloomberg School of Public Health}}
+\author{Roger D. Peng $<$roger.peng@austin.utexas.edu$>$\\\textit{Department of
+Statistics and Data Sciences}\\\textit{University of Texas, Austin}}
 
 \date{}
 
