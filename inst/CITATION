@@ -1,8 +1,7 @@
-citHeader("The reference for the 'filehash' package is:")
-
-citEntry(entry = "article",
+bibentry(bibtype = "article",
+         header = "The reference for the 'filehash' package is:",       
          title = "Interacting with data using the filehash package",
-         author = personList(person(given = "Roger D.", family = "Peng")),
+         author = c(person(given = "Roger D.", family = "Peng")),
 	 journal = "R News",
          year = "2006",
 	 volume = "6",
