@@ -1,0 +1,34 @@
+
+R version 4.2.2 Patched (2023-02-20 r83890) -- "Innocent and Trusting"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin22.3.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ## Verify 'digest' output
+> 
+> suppressMessages(library(filehash))
+> suppressMessages(library(digest))
+> 
+> x <- 1:100
+> bytes <- serialize(x, NULL)
+> digest(bytes, algo = "sha1", skip = 14L, serialize = FALSE)
+[1] "d123cdcc2f8a32db324c172eb790b04907a9ed1d"
+> 
+> filehash:::sha1(x)
+[1] "d123cdcc2f8a32db324c172eb790b04907a9ed1d"
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  0.101   0.022   0.127 
